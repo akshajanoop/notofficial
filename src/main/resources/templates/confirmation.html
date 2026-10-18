@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Booking Confirmed')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            
+            <!-- Success Animation Icon -->
+            <div class="mb-4">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width: 80px; height: 80px;">
+                    <i class="bi bi-check-lg display-4"></i>
+                </div>
+            </div>
+
+            <h2 class="fw-bold mb-1">Booking Confirmed!</h2>
+            <p class="text-muted">Your tickets are successfully reserved. Enjoy the movie!</p>
+
+            <!-- Ticket Summary Card -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white text-start mb-4">
+                <div class="d-flex justify-content-between border-bottom pb-3 mb-3">
+                    <div>
+                        <span class="small text-muted text-uppercase">Booking Reference</span>
+                        <h5 class="fw-bold text-danger mb-0">#CR-<span th:text="${booking.bookingId}">1001</span></h5>
+                    </div>
+                    <span class="badge bg-success align-self-start p-2"><i class="bi bi-patch-check"></i> CONFIRMED</span>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold mb-1" th:text="${booking.movieTitle}">Movie Title</h5>
+                    <div class="text-muted small">
+                        <i class="bi bi-building"></i> <span th:text="${booking.theatreName}">Cinema Name</span>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3 bg-light p-3 rounded-3 small">
+                    <div class="col-6">
+                        <span class="text-muted">Total Paid:</span>
+                        <div class="fw-bold text-dark fs-6">₹<span th:text="${#numbers.formatDecimal(booking.totalAmount, 1, 2)}">350.00</span></div>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted">Credits Redeemed:</span>
+                        <div class="fw-bold text-dark fs-6"><span th:text="${booking.creditsUsed}">50</span> pts</div>
+                    </div>
+                </div>
+
+                <!-- Loyalty Reward Notification -->
+                <div class="alert alert-success d-flex align-items-center mb-0 py-2">
+                    <i class="bi bi-gift fs-4 me-2 text-success"></i>
+                    <div class="small">
+                        You earned <strong>+<span th:text="${earnedCredits}">35</span> Loyalty Credits</strong> on this purchase! (Total Balance: <span th:text="${currentBalance}">85</span> pts)
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <a th:href="@{/profile}" class="btn btn-outline-dark fw-semibold"><i class="bi bi-person"></i> View in Profile</a>
+                <a th:href="@{/}" class="btn btn-danger fw-semibold"><i class="bi bi-film"></i> Book More Movies</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Live Ticket Auctions & Resale Marketplace')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<header class="bg-dark text-white py-4 mb-4 shadow-sm" style="background: linear-gradient(135deg, #870000 0%, #190a05 100%);">
+    <div class="container text-center py-2">
+        <span class="badge bg-danger mb-2"><i class="bi bi-broadcast"></i> Live Ticket Auction & Resale Hub</span>
+        <h2 class="fw-bold mb-1">Live Ticket Auctions & Seat Marketplace</h2>
+        <p class="text-light mb-0 small">Bid in real-time on live tickets or put <strong>any seat</strong> up for live auction with custom starting bids and countdown timers!</p>
+    </div>
+</header>
+
+<main class="container py-2 mb-5">
+    
+    <div class="row g-4">
+        <!-- Left: Active Live Auctions -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-hammer text-danger"></i> Live Bidding Rooms</h4>
+                <span class="badge bg-dark" th:text="${auctions.size()} + ' Active'">1 Active</span>
+            </div>
+
+            <div th:if="${auctions.isEmpty()}" class="text-center py-5 bg-white rounded-3 shadow-sm mb-4">
+                <i class="bi bi-ticket-detailed text-muted display-4"></i>
+                <h5 class="fw-bold mt-3 text-dark">No Active Auctions Right Now</h5>
+                <p class="text-muted small">Be the first to list a seat for live bidding using the panel on the right!</p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-3 mb-4" th:unless="${auctions.isEmpty()}">
+                <div class="col" th:each="auc : ${auctions}">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-danger"><i class="bi bi-broadcast"></i> LIVE BIDDING</span>
+                            <span class="badge bg-secondary"><i class="bi bi-clock"></i> <span th:text="${auc.remainingSeconds / 60} + 'm left'">60m left</span></span>
+                        </div>
+
+                        <h5 class="fw-bold mb-1 text-dark" th:text="${auc.movieTitle}">Movie Title</h5>
+                        <div class="text-muted small mb-2">
+                            <i class="bi bi-building"></i> <span th:text="${auc.theatreName}">Cinema Name</span>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small text-muted">Auction Seat:</span>
+                                <span class="badge bg-dark fw-bold" th:text="'Seat ' + ${auc.seatNumber}">Seat F1</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="small text-muted">Current Bid:</span>
+                                <span class="fs-5 fw-bold text-success">₹<span th:text="${#numbers.formatDecimal(auc.currentBid, 1, 2)}">600.00</span></span>
+                            </div>
+                            <div class="text-end small text-muted mt-1" style="font-size: 0.75rem;">
+                                Leading: <strong th:text="${auc.highestBidderName != null ? auc.highestBidderName : 'No bids yet'}">Alice</strong>
+                            </div>
+                        </div>
+
+                        <a th:href="@{/auction/{id}(id=${auc.auctionId})}" class="btn btn-danger w-100 fw-semibold mt-auto">
+                            <i class="bi bi-hammer"></i> Join Live Bidding
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Put Any Seat Up for Auction -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white sticky-top" style="top: 80px;">
+                <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+                    <i class="bi bi-plus-circle-fill text-danger fs-5"></i>
+                    <h5 class="fw-bold mb-0 text-dark">Auction Any Seat</h5>
+                </div>
+
+                <p class="small text-muted mb-3">
+                    <strong>All seats in the cinema are eligible for auction!</strong> Select any movie show seat to put it up for live public bidding.
+                </p>
+
+                <form th:action="@{/auction/create}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Choose Movie & Seat</label>
+                        <select name="seatId" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>-- Select a Show & Seat --</option>
+                            <option th:each="s : ${availableSeats}" 
+                                    th:value="${s.get('SEAT_ID') != null ? s.get('SEAT_ID') : s.get('seat_id')}"
+                                    th:text="${(s.get('MOVIE_TITLE') != null ? s.get('MOVIE_TITLE') : s.get('movie_title')) + ' | ' + (s.get('THEATRE_NAME') != null ? s.get('THEATRE_NAME') : s.get('theatre_name')) + ' | Seat ' + (s.get('SEAT_NUMBER') != null ? s.get('SEAT_NUMBER') : s.get('seat_number')) + ' (' + (s.get('TYPE') != null ? s.get('TYPE') : s.get('type')) + ' ₹' + (s.get('PRICE') != null ? s.get('PRICE') : s.get('price')) + ')'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Starting Minimum Bid (₹)</label>
+                        <input type="number" name="startingBid" class="form-control form-control-sm" placeholder="e.g. 250" min="50" step="50" value="250" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Auction Countdown Duration</label>
+                        <select name="durationMinutes" class="form-select form-select-sm">
+                            <option value="15">15 Minutes (Quick Auction)</option>
+                            <option value="30">30 Minutes</option>
+                            <option value="60" selected>1 Hour</option>
+                            <option value="120">2 Hours</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 py-2 fw-bold small">
+                        <i class="bi bi-broadcast"></i> Launch Seat Auction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

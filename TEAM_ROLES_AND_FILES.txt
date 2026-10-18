@@ -1,0 +1,204 @@
+================================================================================
+CINERESERVE: MOVIE TICKET BOOKING SYSTEM
+4-MEMBER TEAM PROJECT WORKLOAD & FILE ASSIGNMENT BREAKDOWN
+(INCLUDING ADMIN PORTAL FOR INSERTING MOVIES, THEATRES & SHOWS)
+================================================================================
+
+PROJECT SUMMARY:
+A 4-tier Movie Ticket Booking System built with Java 17, Spring Boot 3,
+Spring MVC, Direct JDBC (JdbcTemplate), H2/MySQL, and Bootstrap 5.3.
+Includes full Admin Access at "/admin" to insert and manage movies, theatres,
+and showtimes.
+
+--------------------------------------------------------------------------------
+OVERVIEW MATRIX
+--------------------------------------------------------------------------------
+Member 1: Database & Project Setup (10 files) - Easy
+Member 2: Seat/Booking Models & All Repositories/Queries (14 files) - Easy/Medium
+Member 3: Business Logic, Math & Rules (6 files) - Hardest (Math, Algorithms, Concurrency)
+Member 4: Webpages, Admin Portal & Connectors (19 files) - Medium (HTML, UI, Controllers)
+
+================================================================================
+MEMBER 1: DATABASE & PROJECT SETUP
+================================================================================
+Role:
+Creates the database tables, defines relationships (foreign keys, cascading deletes),
+inserts sample seed data, handles application configuration and project dependencies,
+and writes the initial core Java domain models.
+
+Assigned Files (10 files):
+1.  sql/schema.sql
+    - 10 SQL tables with primary keys, foreign keys, and indexes.
+    - Configured ON DELETE CASCADE for shows/seats when admin deletes a movie or theatre.
+2.  sql/data.sql
+    - Sample movies, theatres, showtimes, users, and seat prices for testing.
+3.  src/main/resources/application.properties
+    - Database connection settings (URL, user, password, port 8080).
+4.  pom.xml
+    - Maven dependencies (Spring Boot, Thymeleaf, JDBC, MySQL Connector, H2).
+5.  src/main/java/com/moviebooking/MovieBookingApplication.java
+    - Main entry point that starts the Spring Boot application and scheduler.
+6.  src/main/java/com/moviebooking/config/DatabaseConfig.java
+    - Spring configuration setting up the JdbcTemplate bean.
+7.  src/main/java/com/moviebooking/model/User.java
+    - Java class: userId, name, email, password, login() helper method.
+8.  src/main/java/com/moviebooking/model/Movie.java
+    - Java class: movieId, title, genre, rating, duration, posterUrl, director, cast.
+9.  src/main/java/com/moviebooking/model/Theatre.java
+    - Java class: theatreId, name, location, city, latitude, longitude.
+10. src/main/java/com/moviebooking/model/Show.java
+    - Java class: showId, movieId, theatreId, showTime, getShowDate(), getFormattedTime().
+
+Admin Portal Contribution:
+- Designed the relational tables with auto-increment IDs and foreign keys so newly
+  inserted movies, theatres, and shows automatically link together properly.
+
+================================================================================
+MEMBER 2: SEAT/BOOKING MODELS & ALL QUERIES (REPOSITORIES)
+================================================================================
+Role:
+Creates the advanced seat, booking, auction, and credit model classes, and writes
+all repository classes using Spring's JdbcTemplate to run SQL queries (including
+admin INSERT and DELETE queries) and map database rows into Java objects using RowMappers.
+
+Assigned Files (14 files):
+1.  src/main/java/com/moviebooking/model/Seat.java
+    - Java class: seatId, seatNumber, price, type, status, isAuctionEligible.
+2.  src/main/java/com/moviebooking/model/SeatType.java
+    - Java Enum: STANDARD, PREMIUM, RECLINER with colors and names.
+3.  src/main/java/com/moviebooking/model/SeatStatus.java
+    - Java Enum: AVAILABLE, LOCKED, RESERVED.
+4.  src/main/java/com/moviebooking/model/Booking.java
+    - Java class: bookingId, userId, showId, totalAmount, status.
+5.  src/main/java/com/moviebooking/model/Auction.java
+    - Java class: auctionId, seatId, currentBid, highestBidderId, endTime.
+6.  src/main/java/com/moviebooking/model/Credit.java
+    - Java class: userId, balance, earn(), redeem().
+7.  src/main/java/com/moviebooking/model/CreditTransaction.java
+    - Java class: transactionId, amount, transactionType, balanceAfter.
+8.  src/main/java/com/moviebooking/repository/UserRepository.java
+    - SQL queries for users (findByEmail, findById, save, existsByEmail).
+9.  src/main/java/com/moviebooking/repository/MovieRepository.java
+    - User queries: findAll, findById, findByGenre, findTopRated.
+    - Admin queries: save(Movie) to INSERT new movies, delete(movieId) to DELETE movies.
+10. src/main/java/com/moviebooking/repository/TheatreRepository.java
+    - User queries: findAll, findById, findByCity.
+    - Admin queries: save(Theatre) to INSERT new theatres, delete(theatreId) to DELETE.
+11. src/main/java/com/moviebooking/repository/ShowRepository.java
+    - User queries: findByMovieId, findById, finding available seat counts.
+    - Admin queries: save(Show) to INSERT new scheduled shows, delete(showId).
+12. src/main/java/com/moviebooking/repository/SeatRepository.java
+    - SQL queries for seats (findByShowId, findById, lockSeat, reserveSeat).
+13. src/main/java/com/moviebooking/repository/BookingRepository.java
+    - SQL queries for saving bookings, inserting booking_seats, fetching history.
+14. src/main/java/com/moviebooking/repository/CreditRepository.java
+    - SQL queries for user wallet balance and credit transaction history.
+
+Admin Portal Contribution:
+- Wrote the SQL INSERT and DELETE methods with KeyHolder in MovieRepository,
+  TheatreRepository, and ShowRepository that the Admin controller calls.
+
+================================================================================
+MEMBER 3: BUSINESS LOGIC, MATH & RULES (SERVICES)
+================================================================================
+Role:
+Writes the business rules, calculations, and real-time features. Handles atomic
+concurrency checks, the 10% loyalty cashback formula, the Haversine distance
+algorithm, and the background auction timer.
+
+Assigned Files (6 files):
+1.  src/main/java/com/moviebooking/service/BookingService.java
+    - Rules: checks seat availability, locks seats, calculates subtotal, confirms booking.
+2.  src/main/java/com/moviebooking/service/CreditService.java
+    - Math: calculates 10% cashback (Points = Amount * 0.10) and applies discount at checkout.
+3.  src/main/java/com/moviebooking/service/RecommendationService.java
+    - Math: Great-Circle Haversine formula to compute exact km distance to theatres.
+4.  src/main/java/com/moviebooking/service/AuctionService.java
+    - Bidding rules: ensures new bid > current highest bid, marks winner on expiration.
+5.  src/main/java/com/moviebooking/scheduler/AuctionScheduler.java
+    - Background daemon: runs every 10 seconds to auto-close expired auctions.
+6.  src/main/java/com/moviebooking/service/MovieSyncService.java
+    - Startup logic: fetches official movie posters and IMDb ratings.
+
+Admin Portal Contribution:
+- Built the automated 30-seat generator (populateDefaultSeatsIfEmpty in SeatRepository)
+  which triggers when an admin schedules a show, instantly generating Standard,
+  Premium, and VIP Recliner seats ready for booking.
+
+================================================================================
+MEMBER 4: WEBPAGES, ADMIN PORTAL & CONNECTORS (UI / CONTROLLERS)
+================================================================================
+Role:
+Creates the HTML webpages, the dedicated Admin Portal interface, dark-themed
+styling, client-side JavaScript timers and calculators, and writes the Spring MVC
+Controllers that connect user and admin button clicks to the Java backend.
+
+Assigned Files (19 files):
+1.  src/main/java/com/moviebooking/controller/AdminController.java
+    - Handles GET /admin (dashboard), POST /admin/movies/add, POST /admin/movies/delete,
+      POST /admin/theatres/add, POST /admin/theatres/delete, POST /admin/shows/add.
+2.  src/main/resources/templates/admin.html
+    - The Admin Dashboard page: tabbed interface to add/delete movies with posters,
+      add/delete theatres with GPS coordinates, and schedule shows with seat creation.
+3.  src/main/java/com/moviebooking/controller/HomeController.java
+    - Connects "/" URL -> loads movie catalog and genre filters.
+4.  src/main/java/com/moviebooking/controller/MovieController.java
+    - Connects movie detail URL -> loads showtimes grouped by cinema.
+5.  src/main/java/com/moviebooking/controller/SeatController.java
+    - Connects seat selection URL -> renders interactive grid, handles lock API.
+6.  src/main/java/com/moviebooking/controller/BookingController.java
+    - Connects checkout and confirmation URLs -> executes booking transaction.
+7.  src/main/java/com/moviebooking/controller/AuctionController.java
+    - Connects auction room URL -> live bid API and status polling.
+8.  src/main/java/com/moviebooking/controller/AuthController.java
+    - Handles login, signup, and session logout.
+9.  src/main/java/com/moviebooking/controller/ProfileController.java
+    - Shows user wallet credits and past booking history.
+10. src/main/resources/templates/layout.html
+    - Base template with navigation bar, user dropdown with Admin Panel (for logged-in admins), and footer.
+11. src/main/resources/templates/home.html
+    - Homepage with movie poster cards, hero carousel, and city selectors.
+12. src/main/resources/templates/shows.html
+    - Showtime schedules grouped by cinema hall.
+13. src/main/resources/templates/seats.html
+    - Color-coded seat grid (Blue=Standard, Gold=Premium, Purple=VIP Recliner).
+14. src/main/resources/templates/checkout.html
+    - Payment summary with loyalty credits discount toggle.
+15. src/main/resources/templates/confirmation.html
+    - Digital e-ticket card with booking reference code and cashback earned.
+16. src/main/resources/templates/auction.html
+    - Live bidding room with real-time countdown timer.
+17. src/main/resources/templates/login.html & register.html
+    - User sign-in and registration forms.
+18. src/main/resources/templates/profile.html
+    - User loyalty points balance and past tickets.
+19. src/main/resources/static/css/style.css & static/js/main.js
+    - Styling and JavaScript for seat grid, live totals, countdowns, and polling.
+
+Admin Portal Contribution:
+- Built the Admin UI (admin.html) with forms to insert movies, theatres, and shows.
+- Created AdminController.java to process the form submissions and redirect with success alerts.
+- Configured credential-based access: no public admin button is visible to normal users.
+  Logging in with administrator credentials (admin@cinereserve.com / admin123) automatically
+  grants admin session, redirects to /admin, and enables the Admin Panel in the user dropdown.
+
+================================================================================
+HOW ALL 4 MEMBERS CONNECT TOGETHER FOR ADMIN ACCESS
+================================================================================
+Admin enters Movie/Theatre details on "/admin" page (Member 4 - admin.html)
+        |
+        v
+AdminController receives the POST request (Member 4 - AdminController.java)
+        |
+        v
+Calls MovieRepository / TheatreRepository to INSERT (Member 2 - Repositories)
+        |
+        v
+Calls SeatRepository to generate 30 seats if show (Member 3 - Logic / Seats)
+        |
+        v
+Saves row into SQL Database with auto-increment ID (Member 1 - SQL Schema)
+        |
+        v
+Redirects to "/admin" with green "Success!" alert (Member 4 - UI)
+================================================================================

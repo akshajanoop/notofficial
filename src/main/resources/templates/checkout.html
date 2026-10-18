@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Checkout & Payment')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h3 class="fw-bold mb-4"><i class="bi bi-cart-check"></i> Order Checkout</h3>
+
+            <!-- Show Details Summary -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark" th:text="${show.movieTitle}">Movie Title</h5>
+                        <div class="text-muted small">
+                            <i class="bi bi-building"></i> <span th:text="${show.theatreName}">Theatre</span> &nbsp;|&nbsp;
+                            <i class="bi bi-calendar"></i> <span th:text="${#temporals.format(show.showTime, 'EEE, dd MMM yyyy, hh:mm a')}">Date</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-success p-2">Seats Temporarily Locked</span>
+                </div>
+            </div>
+
+            <!-- Seat Breakdown Table -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
+                <h6 class="fw-bold mb-3 border-bottom pb-2">Selected Tickets</h6>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Seat No</th>
+                                <th>Category</th>
+                                <th class="text-end">Unit Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="seat : ${seats}">
+                                <td class="fw-bold" th:text="${seat.seatNumber}">A1</td>
+                                <td>
+                                    <span class="badge" th:classappend="'bg-' + (${seat.seatType.name() == 'STANDARD' ? 'primary' : (seat.seatType.name() == 'PREMIUM' ? 'warning text-dark' : 'purple text-white')})" th:text="${seat.seatType}">STANDARD</span>
+                                </td>
+                                <td class="text-end fw-semibold">₹<span th:text="${#numbers.formatDecimal(seat.price, 1, 2)}">200.00</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Loyalty Credits Redemption Card -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-coin text-warning"></i> Redeem Loyalty Credits</h6>
+                    <span class="badge bg-warning text-dark">Available Balance: <strong th:text="${creditBalance}">50</strong> pts (₹<span th:text="${creditBalance}">50</span>)</span>
+                </div>
+
+                <div th:if="${creditBalance > 0}" class="row align-items-center">
+                    <div class="col-md-7">
+                        <p class="text-muted small mb-0">Use your loyalty points to get an instant discount on your order (1 point = ₹1.00).</p>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light small">Pts</span>
+                            <input type="number" id="redeem-input" class="form-control text-end" min="0" th:max="${creditBalance}" value="0" oninput="calculateFinalTotal()">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="applyMaxCredits()">Max</button>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${creditBalance == 0}" class="text-muted small">
+                    You have 0 loyalty points. You will earn 10% cashback points on this booking!
+                </div>
+            </div>
+
+            <!-- Final Order Total & Confirmation Form -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Tickets Subtotal</span>
+                    <span class="fw-semibold">₹<span id="subtotal-val" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
+                </div>
+                <div class="d-flex justify-content-between mb-3 text-success">
+                    <span>Loyalty Credit Discount</span>
+                    <span>- ₹<span id="discount-val">0.00</span></span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-3 mb-4">
+                    <span class="fs-5 fw-bold">Total Amount Payable</span>
+                    <span class="fs-4 fw-bold text-danger">₹<span id="final-payable" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
+                </div>
+
+                <form th:action="@{/checkout/confirm}" method="post">
+                    <input type="hidden" name="creditsToRedeem" id="hidden-credits" value="0">
+                    <button type="submit" class="btn btn-danger btn-lg w-100 py-3 fw-bold">
+                        <i class="bi bi-credit-card"></i> Pay & Confirm Reservation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<script th:inline="javascript">
+    const subtotal = /*[[${subtotal}]]*/ 400.00;
+    const maxUserBalance = /*[[${creditBalance}]]*/ 50;
+
+    function applyMaxCredits() {
+        const input = document.getElementById('redeem-input');
+        if (input) {
+            const applicable = Math.min(maxUserBalance, Math.floor(subtotal));
+            input.value = applicable;
+            calculateFinalTotal();
+        }
+    }
+
+    function calculateFinalTotal() {
+        const input = document.getElementById('redeem-input');
+        let points = input ? parseInt(input.value) : 0;
+        if (isNaN(points) || points < 0) points = 0;
+        if (points > maxUserBalance) points = maxUserBalance;
+        if (points > subtotal) points = Math.floor(subtotal);
+
+        if (input) input.value = points;
+
+        const finalAmount = Math.max(0.0, subtotal - points);
+        document.getElementById('discount-val').innerText = points.toFixed(2);
+        document.getElementById('final-payable').innerText = finalAmount.toFixed(2);
+        document.getElementById('hidden-credits').value = points;
+    }
+</script>
+
+</body>
+</html>

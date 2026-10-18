@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Admin Control Center')}"></head>
+<body class="bg-dark text-light">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container py-4">
+
+    <!-- Header & Breadcrumb -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+        <div>
+            <h2 class="fw-bold text-danger mb-0">
+                <i class="bi bi-shield-lock-fill"></i> Admin Portal
+            </h2>
+            <small class="text-secondary">Insert, update, and manage movies, theatres, and auditorium shows</small>
+        </div>
+        <div>
+            <a th:href="@{/}" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Back to Main Site
+            </a>
+            <span class="badge bg-danger px-3 py-2 fs-6">ADMINISTRATOR</span>
+        </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    <div th:if="${msg == 'movie_added'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> New movie was added to the catalog.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'movie_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-trash-fill me-2"></i> Movie removed from catalog.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'theatre_added'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> New cinema hall was added to the network.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'theatre_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-trash-fill me-2"></i> Theatre hall removed from database.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'show_added'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Show scheduled and 30-seat grid automatically created!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'show_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-trash-fill me-2"></i> Show schedule deleted.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+                <div class="fs-4 fw-bold text-danger" th:text="${#lists.size(movies)}">0</div>
+                <div class="text-secondary small text-uppercase">Movies in Catalog</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+                <div class="fs-4 fw-bold text-warning" th:text="${#lists.size(theatres)}">0</div>
+                <div class="text-secondary small text-uppercase">Theatres Active</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+                <div class="fs-4 fw-bold text-info" th:text="${#lists.size(shows)}">0</div>
+                <div class="text-secondary small text-uppercase">Scheduled Shows</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav Tabs for Navigation -->
+    <ul class="nav nav-pills mb-4 nav-justified bg-black p-2 rounded border border-secondary" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" id="movies-tab" data-bs-toggle="tab" data-bs-target="#movies" type="button" role="tab">
+                <i class="bi bi-film"></i> Movies
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" id="theatres-tab" data-bs-toggle="tab" data-bs-target="#theatres" type="button" role="tab">
+                <i class="bi bi-building"></i> Theatres & Cinemas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" id="shows-tab" data-bs-toggle="tab" data-bs-target="#shows" type="button" role="tab">
+                <i class="bi bi-calendar-event"></i> Show Scheduling
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="adminTabsContent">
+
+        <!-- TAB 1: MOVIES -->
+        <div class="tab-pane fade show active" id="movies" role="tabpanel">
+            <div class="row g-4">
+                <!-- Add Movie Form -->
+                <div class="col-lg-5">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-danger text-white fw-bold">
+                            <i class="bi bi-plus-circle"></i> Add New Movie
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/movies/add}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Movie Title *</label>
+                                    <input type="text" name="title" class="form-control bg-dark text-light border-secondary" placeholder="e.g. Interstellar" required>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">Genre *</label>
+                                        <select name="genre" class="form-select bg-dark text-light border-secondary">
+                                            <option value="Action">Action</option>
+                                            <option value="Sci-Fi">Sci-Fi</option>
+                                            <option value="Romance">Romance</option>
+                                            <option value="Horror">Horror</option>
+                                            <option value="Comedy">Comedy</option>
+                                            <option value="Thriller">Thriller</option>
+                                            <option value="Drama">Drama</option>
+                                            <option value="Animation">Animation</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">IMDb Rating (0-10)</label>
+                                        <input type="number" step="0.1" min="1.0" max="10.0" name="rating" value="8.0" class="form-control bg-dark text-light border-secondary" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Duration (Minutes)</label>
+                                    <input type="number" name="durationMinutes" value="145" class="form-control bg-dark text-light border-secondary" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Poster Image URL</label>
+                                    <input type="url" name="posterUrl" class="form-control bg-dark text-light border-secondary" placeholder="https://example.com/poster.jpg (Optional)">
+                                    <small class="text-secondary">Leave blank to use a high-definition default cinema poster</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Director</label>
+                                    <input type="text" name="director" class="form-control bg-dark text-light border-secondary" placeholder="e.g. Christopher Nolan">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Cast Members</label>
+                                    <input type="text" name="castMembers" class="form-control bg-dark text-light border-secondary" placeholder="e.g. Matthew McConaughey, Anne Hathaway">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Plot Description</label>
+                                    <textarea name="description" rows="3" class="form-control bg-dark text-light border-secondary" placeholder="Brief synopsis of the film..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-danger w-100 fw-bold">
+                                    <i class="bi bi-cloud-arrow-up"></i> Save & Publish Movie
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Movies List -->
+                <div class="col-lg-7">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-dark text-light fw-bold d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-list-ul"></i> Existing Movies (<span th:text="${#lists.size(movies)}"></span>)</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover mb-0 align-middle">
+                                    <thead>
+                                        <tr class="text-secondary small text-uppercase">
+                                            <th style="width: 70px;">Poster</th>
+                                            <th>Title & Info</th>
+                                            <th>Genre</th>
+                                            <th>Rating</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="m : ${movies}">
+                                            <td>
+                                                <img th:src="${m.posterUrl}" th:alt="${m.title}" class="rounded" style="width: 50px; height: 70px; object-fit: cover;">
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold" th:text="${m.title}">Movie Title</div>
+                                                <small class="text-secondary" th:text="${m.durationMinutes} + ' mins | Dir: ' + ${m.director}"></small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary" th:text="${m.genre}">Genre</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fw-bold">
+                                                    <i class="bi bi-star-fill"></i> <span th:text="${m.rating}"></span>
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <form th:action="@{/admin/movies/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                                    <input type="hidden" name="movieId" th:value="${m.movieId}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: THEATRES -->
+        <div class="tab-pane fade" id="theatres" role="tabpanel">
+            <div class="row g-4">
+                <!-- Add Theatre Form -->
+                <div class="col-lg-5">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-warning text-dark fw-bold">
+                            <i class="bi bi-plus-circle"></i> Add New Cinema Hall
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/theatres/add}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Theatre Name *</label>
+                                    <input type="text" name="name" class="form-control bg-dark text-light border-secondary" placeholder="e.g. Cinepolis Nexus Mall" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">City *</label>
+                                    <input type="text" name="city" class="form-control bg-dark text-light border-secondary" placeholder="e.g. Mumbai, Delhi, Bengaluru" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Full Address / Location *</label>
+                                    <input type="text" name="address" class="form-control bg-dark text-light border-secondary" placeholder="e.g. 4th Floor, Nexus Seawoods Mall" required>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">Latitude (GPS)</label>
+                                        <input type="number" step="0.0001" name="latitude" value="19.0760" class="form-control bg-dark text-light border-secondary" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">Longitude (GPS)</label>
+                                        <input type="number" step="0.0001" name="longitude" value="72.8777" class="form-control bg-dark text-light border-secondary" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-warning text-dark w-100 fw-bold">
+                                    <i class="bi bi-building-add"></i> Add Cinema Hall
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Theatres List -->
+                <div class="col-lg-7">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-dark text-light fw-bold">
+                            <i class="bi bi-geo-alt"></i> Active Cinema Halls (<span th:text="${#lists.size(theatres)}"></span>)
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover mb-0 align-middle">
+                                    <thead>
+                                        <tr class="text-secondary small text-uppercase">
+                                            <th>Theatre Name</th>
+                                            <th>City</th>
+                                            <th>Address</th>
+                                            <th>Coordinates</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="t : ${theatres}">
+                                            <td class="fw-bold" th:text="${t.name}">Cinema Name</td>
+                                            <td><span class="badge bg-info text-dark" th:text="${t.city}">City</span></td>
+                                            <td class="text-secondary small" th:text="${t.address}">Address</td>
+                                            <td>
+                                                <small class="text-secondary" th:text="${t.latitude} + ', ' + ${t.longitude}"></small>
+                                            </td>
+                                            <td class="text-end">
+                                                <form th:action="@{/admin/theatres/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this theatre?');">
+                                                    <input type="hidden" name="theatreId" th:value="${t.theatreId}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SHOW SCHEDULING -->
+        <div class="tab-pane fade" id="shows" role="tabpanel">
+            <div class="row g-4">
+                <!-- Schedule Show Form -->
+                <div class="col-lg-5">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-info text-dark fw-bold">
+                            <i class="bi bi-calendar-plus"></i> Schedule New Show
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/shows/add}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Select Movie *</label>
+                                    <select name="movieId" class="form-select bg-dark text-light border-secondary" required>
+                                        <option th:each="m : ${movies}" th:value="${m.movieId}" th:text="${m.title}"></option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light small fw-bold">Select Cinema / Theatre *</label>
+                                    <select name="theatreId" class="form-select bg-dark text-light border-secondary" required>
+                                        <option th:each="t : ${theatres}" th:value="${t.theatreId}" th:text="${t.name} + ' (' + ${t.city} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">Show Date *</label>
+                                        <input type="date" name="showDate" th:value="${today}" class="form-control bg-dark text-light border-secondary" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-light small fw-bold">Show Time *</label>
+                                        <input type="time" name="showTime" value="18:30" class="form-control bg-dark text-light border-secondary" required>
+                                    </div>
+                                </div>
+                                <div class="alert alert-dark border-secondary small text-secondary">
+                                    <i class="bi bi-info-circle me-1"></i> A standardized 30-seat auditorium grid (Standard, Premium Sweet-Spot, and Recliners with live auction eligibility) will be automatically created.
+                                </div>
+                                <button type="submit" class="btn btn-info text-dark w-100 fw-bold">
+                                    <i class="bi bi-check-circle"></i> Create Show & Seats
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Shows List -->
+                <div class="col-lg-7">
+                    <div class="card bg-black border-secondary shadow">
+                        <div class="card-header bg-dark text-light fw-bold">
+                            <i class="bi bi-calendar3"></i> Scheduled Screenings (<span th:text="${#lists.size(shows)}"></span>)
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover mb-0 align-middle">
+                                    <thead>
+                                        <tr class="text-secondary small text-uppercase">
+                                            <th>Movie</th>
+                                            <th>Theatre</th>
+                                            <th>Date & Time</th>
+                                            <th>Available Seats</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="s : ${shows}">
+                                            <td class="fw-bold" th:text="${s.movieTitle}">Movie Title</td>
+                                            <td th:text="${s.theatreName}">Cinema Name</td>
+                                            <td>
+                                                <span class="badge bg-secondary" th:text="${s.showDate}"></span>
+                                                <small class="text-info" th:text="${s.formattedTime}"></small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success" th:text="${s.availableSeats} + ' / 30 seats'"></span>
+                                            </td>
+                                            <td class="text-end">
+                                                <form th:action="@{/admin/shows/delete}" method="post" onsubmit="return confirm('Delete this scheduled show?');">
+                                                    <input type="hidden" name="showId" th:value="${s.showId}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:replace="~{layout :: scripts}"></script>
+
+</body>
+</html>

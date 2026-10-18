@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Live Ticket Auction - ' + ${auction.seatNumber})}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Auction Status Header Card -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <div>
+                        <span class="badge bg-danger mb-1"><i class="bi bi-broadcast"></i> Live Ticket Auction</span>
+                        <h3 class="fw-bold mb-0 text-dark">
+                            Seat <span th:text="${auction.seatNumber}">F1</span> (Recliner Experience)
+                        </h3>
+                        <div class="text-muted small mt-1">
+                            <i class="bi bi-film"></i> <span th:text="${auction.movieTitle}">Movie</span> &nbsp;|&nbsp;
+                            <i class="bi bi-building"></i> <span th:text="${auction.theatreName}">Theatre</span>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <span class="badge" th:classappend="${auction.status == 'ACTIVE'} ? 'bg-success' : 'bg-secondary'" th:text="${auction.status}">ACTIVE</span>
+                    </div>
+                </div>
+
+                <div class="row g-4 text-center my-2">
+                    <!-- Real-Time Countdown Timer -->
+                    <div class="col-md-6 border-end">
+                        <div class="text-muted small text-uppercase fw-semibold mb-1">Time Remaining</div>
+                        <div id="countdown-timer" class="auction-timer">--:--:--</div>
+                        <small class="text-muted" id="timer-status">Auction closing shortly</small>
+                    </div>
+
+                    <!-- Current Highest Bid -->
+                    <div class="col-md-6">
+                        <div class="text-muted small text-uppercase fw-semibold mb-1">Current Highest Bid</div>
+                        <div class="display-5 fw-bold text-success">
+                            ₹<span id="current-bid" th:text="${#numbers.formatDecimal(auction.currentBid, 1, 2)}">600.00</span>
+                        </div>
+                        <small class="text-muted">
+                            Highest Bidder: <strong id="highest-bidder" th:text="${auction.highestBidderName != null ? auction.highestBidderName : 'No bids yet'}">Alice Smith</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bidding Action Form Card -->
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+                <h5 class="fw-bold mb-3"><i class="bi bi-hammer"></i> Place Your Bid</h5>
+                <p class="text-muted small">Enter an amount higher than the current bid to take the lead. When the timer expires, the highest bidder automatically wins the ticket.</p>
+
+                <div id="bid-feedback" class="alert py-2 small" style="display: none;"></div>
+
+                <div class="input-group input-group-lg mb-3">
+                    <span class="input-group-text bg-light fw-bold">₹</span>
+                    <input type="number" id="bid-input" class="form-control" placeholder="Enter bid amount" step="50" min="1">
+                    <button class="btn btn-danger px-4 fw-bold" id="submit-bid-btn" onclick="submitBid()">
+                        <i class="bi bi-arrow-up-circle"></i> Place Bid
+                    </button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center text-muted small border-top pt-3">
+                    <span><i class="bi bi-shield-check text-success"></i> Real-time synchronized bid processing</span>
+                    <span><i class="bi bi-arrow-repeat"></i> Auto-refreshes every 3 seconds</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Live Countdown & Polling Script -->
+<script th:inline="javascript">
+    const auctionId = /*[[${auction.auctionId}]]*/ 1;
+    let remainingSec = /*[[${auction.remainingSeconds}]]*/ 7200;
+    let currentBidVal = /*[[${auction.currentBid}]]*/ 600.00;
+
+    // Set initial recommended bid in input
+    document.getElementById('bid-input').value = (currentBidVal + 50).toFixed(0);
+
+    function formatTime(totalSeconds) {
+        if (totalSeconds <= 0) return "00:00:00";
+        const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    }
+
+    // Local 1-second interval countdown
+    const timerInterval = setInterval(() => {
+        if (remainingSec > 0) {
+            remainingSec--;
+            document.getElementById('countdown-timer').innerText = formatTime(remainingSec);
+        } else {
+            document.getElementById('countdown-timer').innerText = "00:00:00";
+            document.getElementById('timer-status').innerText = "Auction has concluded!";
+            document.getElementById('submit-bid-btn').disabled = true;
+            clearInterval(timerInterval);
+        }
+    }, 1000);
+
+    // REST Polling every 3 seconds for live bids across all participants
+    setInterval(async () => {
+        try {
+            const res = await fetch(`/api/auction/${auctionId}/status`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.currentBid) {
+                    currentBidVal = data.currentBid;
+                    document.getElementById('current-bid').innerText = data.currentBid.toFixed(2);
+                }
+                if (data.highestBidderName) {
+                    document.getElementById('highest-bidder').innerText = data.highestBidderName;
+                }
+                if (data.remainingSeconds !== undefined) {
+                    remainingSec = data.remainingSeconds;
+                }
+                if (data.isExpired || data.status !== 'ACTIVE') {
+                    document.getElementById('submit-bid-btn').disabled = true;
+                }
+            }
+        } catch (e) {
+            console.error("Polling error", e);
+        }
+    }, 3000);
+
+    // Place Bid Submission Handler
+    async function submitBid() {
+        const input = document.getElementById('bid-input');
+        const btn = document.getElementById('submit-bid-btn');
+        const feedback = document.getElementById('bid-feedback');
+        const bidAmount = parseFloat(input.value);
+
+        feedback.style.display = 'none';
+
+        if (isNaN(bidAmount) || bidAmount <= currentBidVal) {
+            feedback.className = 'alert alert-warning py-2 small';
+            feedback.innerText = `Please enter an amount greater than ₹${currentBidVal.toFixed(2)}`;
+            feedback.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+
+        try {
+            const res = await fetch(`/api/auction/${auctionId}/bid`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bidAmount: bidAmount })
+            });
+
+            const result = await res.json();
+            if (result.redirect) {
+                window.location.href = result.redirect;
+                return;
+            }
+
+            feedback.style.display = 'block';
+            if (result.success) {
+                feedback.className = 'alert alert-success py-2 small';
+                feedback.innerText = result.message;
+                currentBidVal = bidAmount;
+                document.getElementById('current-bid').innerText = bidAmount.toFixed(2);
+                input.value = (bidAmount + 50).toFixed(0);
+            } else {
+                feedback.className = 'alert alert-danger py-2 small';
+                feedback.innerText = result.message;
+            }
+        } catch (err) {
+            feedback.className = 'alert alert-danger py-2 small';
+            feedback.innerText = 'Network error while placing bid.';
+            feedback.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-arrow-up-circle"></i> Place Bid';
+        }
+    }
+</script>
+
+</body>
+</html>
