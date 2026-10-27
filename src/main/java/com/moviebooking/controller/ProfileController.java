@@ -32,8 +32,14 @@ public class ProfileController {
         this.creditService = creditService;
     }
 
-    @GetMapping("/profile")
+    @GetMapping({"/profile", "/settings", "/admin/settings"})
     public String viewProfile(HttpSession session, Model model) {
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (Boolean.TRUE.equals(isAdmin)) {
+            // Administrators are directed to the Admin Control Center for catalog and booking oversight
+            return "redirect:/admin";
+        }
+
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";

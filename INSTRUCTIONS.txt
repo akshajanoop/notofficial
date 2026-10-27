@@ -1,0 +1,126 @@
+================================================================================
+                    CINERESERVE - USER & ADMIN USER MANUAL
+================================================================================
+
+Welcome to the CineReserve Movie Ticket Booking & Live Auction System.
+This reference manual outlines how to operate the portal, account credentials,
+and instructions for all features across customer and administrator roles.
+
+--------------------------------------------------------------------------------
+1. DEFAULT DEMO ACCOUNTS & CREDENTIALS
+--------------------------------------------------------------------------------
+• Customer Account:
+  Email:    alice@example.com
+  Password: password123
+  Features: Browse movies, visual seat selection, checkout with loyalty credits,
+            view ticket booking history, and list seats on the live auction exchange.
+
+• Administrator Account:
+  Email:    admin@cinereserve.com
+  Password: admin123
+  Features: Full access to the Admin Portal (/admin) to add, edit, or delete
+            movies, cinemas/theatres, scheduled showtimes, and modify customer
+            bookings (cancelling, refunding, releasing seats).
+            Note: Administrators cannot book tickets directly; ticket bookings
+            are reserved for customer accounts.
+
+--------------------------------------------------------------------------------
+2. CUSTOMER GUIDE: BOOKING TICKETS
+--------------------------------------------------------------------------------
+Step 1: Browse Movies
+  • Navigate to the Home page (/) to explore currently running movies.
+  • Filter movies by genre or select recommendations personalized for your city.
+  • Click "Book Tickets" on any movie card to view available cinema locations and showtimes.
+
+Step 2: Choose Theatre & Showtime
+  • Select a cinema hall and pick your desired date and time slot.
+  • Click on the showtime button to open the auditorium seat selection page.
+
+Step 3: Visual Auditorium Seat Map
+  • The auditorium is arranged with 3 seating tiers:
+    - Standard (Rows A–C): Direct close-up view with high visual immersion.
+    - Premium (Rows D–E): Center sweet spot with eye-level screen alignment and optimal Dolby Atmos audio.
+    - Recliner (Row F): VIP motorized luxury plush recliners with panoramic screen view.
+  • Click any green (available) seat to select it. Click again to unselect.
+  • The order sidebar dynamically calculates the total price.
+  • Click "Proceed to Checkout" to temporarily lock your selected seats for 5 minutes.
+
+Step 4: Checkout & Loyalty Points Redemption
+  • View your seat breakdown and order total.
+  • Loyalty Credits:
+    - Every booking earns 10% cashback credits automatically upon completion.
+    - 1 Loyalty Point = ₹1.00 instant discount.
+    - Enter the number of points to redeem (or click "Max") to discount your total.
+  • Click "Pay & Confirm Reservation" to finalize the booking.
+  • On the confirmation screen, you receive your booking reference ID (#CR-XXXX).
+
+--------------------------------------------------------------------------------
+3. LIVE TICKET AUCTION & RESALE EXCHANGE
+--------------------------------------------------------------------------------
+CineReserve features a live bidding exchange where seats can be auctioned in real time.
+
+• Participating in an Active Auction:
+  1. Open "Live Ticket Auctions & Resale" in the top navigation (/auctions).
+  2. Select an active auction room to view the countdown timer and current bid.
+  3. Enter an amount higher than the current highest bid and click "Place Bid".
+  4. The screen auto-refreshes every 3 seconds with live synchronized updates.
+  5. When the countdown timer expires, the highest bidder wins the ticket.
+
+• Listing Any Seat for Auction:
+  1. Customers can list seats they cannot attend from their profile page.
+  2. Anyone can also list available cinema seats from the right panel of the Auctions page.
+  3. Choose the show and seat, set a starting minimum bid (e.g., ₹250), and select the auction duration.
+  4. The auction immediately becomes public and accessible to all users.
+
+--------------------------------------------------------------------------------
+4. USER PROFILE & BOOKING MANAGEMENT
+--------------------------------------------------------------------------------
+• Access your profile by clicking your name in the top navigation bar (/profile).
+• View your current Loyalty Points balance.
+• Review your past and current booking confirmations.
+• Click "Auction Ticket" on any confirmed booking to resell or auction a seat.
+• Review your loyalty credit transaction history (earned cashback and redemptions).
+
+--------------------------------------------------------------------------------
+5. ADMINISTRATOR PORTAL GUIDE (/admin)
+--------------------------------------------------------------------------------
+• Accessing the Portal:
+  Log in as admin@cinereserve.com / admin123. The top navigation bar will show
+  an "Admin Portal" link. Any attempt to access profile or settings redirects
+  to the Admin Control Center.
+
+• Tab 1: Movies Management
+  - Add Movie: Enter title, genre, rating, duration, poster image URL, director,
+    and cast/crew members. Click "Add Movie to Catalog".
+  - Edit Movie: Click "Edit" on any movie in the table to modify its title,
+    rating, poster URL, or details in a modal dialog.
+  - Delete Movie: Click "Delete". All dependent shows, seats, auctions, and bookings
+    are safely cascaded and removed cleanly without database constraint errors.
+
+• Tab 2: Theatres Management
+  - Add Theatre: Enter the cinema hall name, street address, city, and GPS coordinates.
+  - Edit/Delete Theatre: Update address details or remove outdated cinema locations.
+
+• Tab 3: Show Scheduling
+  - Add Show: Link a movie to a cinema hall, select the screening date and time.
+    30 auditorium seats (Standard, Premium, and VIP Recliners) are automatically generated.
+  - Edit/Delete Show: Modify showtimes or remove cancelled screenings.
+
+• Tab 4: Customer Bookings Management
+  - View all user reservations across all movies and cinemas in real time.
+  - Modify Status: Change a booking's status to CONFIRMED, CANCELLED, REFUNDED, or PENDING.
+  - Cancelling or Refunding: Setting status to CANCELLED or REFUNDED automatically releases
+    the reserved seats back to the public pool so other moviegoers can book them.
+  - Delete Booking: Permanently removes the booking record and frees up seats.
+
+--------------------------------------------------------------------------------
+6. DATA PERSISTENCE & DATABASE STORAGE
+--------------------------------------------------------------------------------
+• The application uses a persistent file-based H2 database stored at:
+  ./data/movie_booking_db.mv.db
+• All admin additions, edits, deletions, and customer bookings are permanently saved
+  to disk and persist across application restarts, re-runs, and recompilations.
+• To completely reset the database to sample seed data, simply stop the app and
+  delete the ./data directory.
+
+================================================================================

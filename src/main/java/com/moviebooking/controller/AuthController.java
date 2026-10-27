@@ -52,7 +52,21 @@ public class AuthController {
         // Direct administrator credential bypass
         if (trimmedEmail.equalsIgnoreCase("admin@cinereserve.com") &&
             ("admin123".equals(password) || "password123".equals(password) || "admin".equals(password))) {
-            session.setAttribute("userId", 9999);
+            
+            Optional<User> adminOpt = userRepository.findByEmail("admin@cinereserve.com");
+            int adminId;
+            if (adminOpt.isPresent()) {
+                adminId = adminOpt.get().getUserId();
+            } else {
+                User adminUser = new User();
+                adminUser.setName("Administrator");
+                adminUser.setEmail("admin@cinereserve.com");
+                adminUser.setPassword("admin123");
+                adminUser.setCity("Mumbai");
+                adminId = userRepository.save(adminUser);
+            }
+
+            session.setAttribute("userId", adminId);
             session.setAttribute("userName", "Administrator");
             session.setAttribute("userEmail", "admin@cinereserve.com");
             session.setAttribute("userCity", "Mumbai");

@@ -1,81 +1,56 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Select Seats')}"></head>
-<body class="bg-light">
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
 <main class="container py-4">
     <!-- Show & Movie Info Bar -->
-    <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
-        <div class="d-flex flex-wrap justify-content-between align-items-center">
+    <div class="card glass-card border-0 shadow rounded-4 p-3 mb-4" data-reveal>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div>
-                <h4 class="fw-bold mb-1" th:text="${show.movieTitle}">Movie Title</h4>
-                <div class="text-muted small">
-                    <i class="bi bi-building"></i> <span th:text="${show.theatreName}">Theatre Name</span> &nbsp;|&nbsp;
-                    <i class="bi bi-clock"></i> <span th:text="${#temporals.format(show.showTime, 'dd MMM, hh:mm a')}">Showtime</span>
+                <h4 class="fw-bold mb-1 text-white font-heading" th:text="${show.movieTitle}">Movie Title</h4>
+                <div class="text-secondary small d-flex flex-wrap align-items-center gap-2">
+                    <span><i class="bi bi-building text-accent me-1"></i> <span th:text="${show.theatreName}">Theatre Name</span></span>
+                    <span class="text-muted">•</span>
+                    <span><i class="bi bi-clock text-accent me-1"></i> <span th:text="${#temporals.format(show.showTime, 'dd MMM, hh:mm a')}">Showtime</span></span>
                 </div>
             </div>
-            <a th:href="@{/movies/{id}/shows(id=${show.movieId})}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Change Showtime
+            <a th:href="@{/movies/{id}/shows(id=${show.movieId})}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Change Showtime
             </a>
-        </div>
-    </div>
-
-    <!-- Seat Comfort & Screen Viewing Quality Guide Banner -->
-    <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white border-start border-4 border-warning">
-        <div class="d-flex align-items-start gap-3">
-            <div class="bg-warning bg-opacity-25 text-dark p-2 rounded-circle">
-                <i class="bi bi-eye fs-3 text-warning"></i>
-            </div>
-            <div>
-                <h6 class="fw-bold mb-1 text-dark"><i class="bi bi-stars text-warning"></i> Cinema Hall Viewing Comfort & Acoustic Sweet-Spot Guide</h6>
-                <div class="row g-2 small text-muted">
-                    <div class="col-md-4">
-                        <span class="badge bg-primary">Standard (Front Rows A–C)</span>: 
-                        <span>Direct close-up screen view. High visual immersion, slight upward viewing angle.</span>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="badge bg-warning text-dark">Premium (Center Rows D–E) ⭐</span>: 
-                        <span><strong>Prime Sweet Spot</strong>: Perfect eye-level screen alignment, zero neck strain & optimal Dolby sound coverage.</span>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="badge" style="background-color: #6f42c1;">Recliner (Farthest Row F) ⭐⭐⭐</span>: 
-                        <span><strong>Maximum Luxury</strong>: Widest motorized plush recliners with complete panoramic screen view and maximum legroom.</span>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <div class="row g-4">
         <!-- 1. Interactive Large Cinema Seat Map Grid -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white text-center">
+        <div class="col-lg-8" data-reveal>
+            <div class="card glass-card border-0 shadow rounded-4 p-4 text-center">
                 
                 <!-- Curved Cinema Screen Indicator -->
                 <div class="screen-wrapper">
                     <div class="screen-indicator"></div>
                     <div class="screen-glow"></div>
-                    <p class="text-muted small mb-0 text-uppercase fw-bold" style="letter-spacing: 3px;">All Eyes On Screen</p>
+                    <p class="text-secondary small mb-0 text-uppercase fw-bold" style="letter-spacing: 4px;">Auditorium Laser Screen</p>
                 </div>
 
                 <!-- Legend of Seat Types -->
-                <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 py-2 border-top border-bottom small">
+                <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 py-2 border-top border-bottom border-secondary border-opacity-25 small text-secondary">
                     <div class="d-flex align-items-center gap-1">
-                        <span class="seat-btn seat-available seat-standard" style="width:24px; height:22px; font-size:10px;"></span> Standard (₹200)
+                        <span class="seat-btn seat-available seat-standard" style="width:24px; height:22px; font-size:10px; border-radius:4px;"></span> Standard (₹200)
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <span class="seat-btn seat-available seat-premium" style="width:24px; height:22px; font-size:10px;"></span> Premium Sweet Spot (₹350)
+                        <span class="seat-btn seat-available seat-premium" style="width:24px; height:22px; font-size:10px; border-radius:4px;"></span> Premium Sweet Spot (₹350)
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <span class="seat-btn seat-available seat-recliner" style="width:28px; height:22px; font-size:10px;"></span> Farthest VIP Recliner (₹500)
+                        <span class="seat-btn seat-available seat-recliner" style="width:28px; height:22px; font-size:10px; border-radius:4px;"></span> VIP Recliner (₹500)
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <span class="seat-btn seat-selected" style="width:24px; height:22px; font-size:10px;"></span> Selected
+                        <span class="seat-btn seat-selected" style="width:24px; height:22px; font-size:10px; border-radius:4px;"></span> Selected
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <span class="seat-btn seat-reserved" style="width:24px; height:22px; font-size:10px;"></span> Reserved
+                        <span class="seat-btn seat-reserved" style="width:24px; height:22px; font-size:10px; border-radius:4px;"></span> Reserved
                     </div>
                 </div>
 
@@ -103,25 +78,33 @@
                     </div>
                 </div>
 
-                <div class="alert alert-light border small text-muted text-start mb-0">
-                    <i class="bi bi-info-circle text-primary"></i> <strong>Tip:</strong> Seats marked with <span class="badge bg-danger" style="font-size:8px;">BEST VIEW</span> in Rows D–E (Center) and Row F (Farthest VIP Recliners) offer the highest-rated panoramic viewing quality and comfortable eye-level angles.
+                <div class="text-muted small pt-2 border-top border-secondary border-opacity-25">
+                    <i class="bi bi-info-circle me-1 text-accent"></i> Screen is located at the front of the auditorium. All recliner seats feature extra legroom.
                 </div>
             </div>
         </div>
 
         <!-- 2. Dynamic Price & Viewing Comfort Summary Sidebar -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white sticky-top" style="top: 80px;">
-                <h5 class="fw-bold mb-3 border-bottom pb-2">Booking Summary</h5>
+        <div class="col-lg-4" data-reveal>
+            <div class="card glass-card border-0 shadow rounded-4 p-4 sticky-top" style="top: 80px;">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                    <h5 class="fw-bold mb-0 text-white font-heading">
+                        <i class="bi bi-cart-check text-accent me-1"></i> Booking Summary
+                    </h5>
+                    <span id="seat-count-badge" class="badge bg-accent" style="display: none;">0 Seats</span>
+                </div>
 
-                <div id="no-seat-selected" class="text-center py-4 text-muted">
-                    <i class="bi bi-cursor fs-1"></i>
-                    <p class="small mt-2 mb-0">Select seats from the grid to proceed with your reservation.</p>
+                <div id="no-seat-selected" class="text-center py-4 text-secondary">
+                    <i class="bi bi-cursor fs-1 opacity-50 text-accent"></i>
+                    <p class="small mt-2 mb-0">Click on any available seat in the auditorium to reserve.</p>
                 </div>
 
                 <div id="booking-details" style="display: none;">
                     <div class="mb-3">
-                        <label class="small text-muted fw-semibold">Selected Seats & Comfort Quality:</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="small text-secondary fw-semibold">Selected Seats &amp; Comfort Tier:</label>
+                            <span class="badge bg-secondary" id="seats-selected-pill">0 selected</span>
+                        </div>
                         <div id="selected-seats-list" class="d-flex flex-column gap-2 mt-2"></div>
                     </div>
 
@@ -129,26 +112,26 @@
                         <table class="table table-sm table-borderless small mb-2">
                             <tbody>
                                 <tr>
-                                    <td class="text-muted">Tickets Subtotal</td>
-                                    <td class="text-end fw-bold">₹<span id="subtotal-amount">0.00</span></td>
+                                    <td class="text-secondary">Tickets Subtotal</td>
+                                    <td class="text-end fw-bold text-white">₹<span id="subtotal-amount">0.00</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted">Estimated Cashback (10%)</td>
-                                    <td class="text-end text-success">+<span id="cashback-points">0</span> pts</td>
+                                    <td class="text-secondary">Estimated Cashback (10%)</td>
+                                    <td class="text-end text-success fw-semibold">+<span id="cashback-points">0</span> pts</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="border-top pt-2 mb-4 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Total Payable:</span>
-                        <span class="fs-4 fw-bold text-danger">₹<span id="total-amount">0.00</span></span>
+                    <div class="border-top border-secondary border-opacity-25 pt-2 mb-4 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-white">Total Payable:</span>
+                        <span class="fs-4 fw-bold text-accent">₹<span id="total-amount">0.00</span></span>
                     </div>
 
                     <div id="lock-error-alert" class="alert alert-danger py-2 small" style="display: none;"></div>
 
-                    <button type="button" id="proceed-btn" class="btn btn-danger w-100 py-2 fw-semibold" onclick="lockAndCheckout()">
-                        <i class="bi bi-lock-fill"></i> Lock Seats & Checkout
+                    <button type="button" id="proceed-btn" class="btn btn-accent w-100 py-3 fw-bold rounded-pill shadow" onclick="lockAndCheckout()">
+                        <i class="bi bi-lock-fill me-1"></i> Lock Seats &amp; Checkout
                     </button>
                 </div>
             </div>
@@ -188,15 +171,25 @@
         const subtotalSpan = document.getElementById('subtotal-amount');
         const totalSpan = document.getElementById('total-amount');
         const cashbackSpan = document.getElementById('cashback-points');
+        const seatCountBadge = document.getElementById('seat-count-badge');
+        const seatsSelectedPill = document.getElementById('seats-selected-pill');
 
         if (selectedSeats.size === 0) {
             noSeatBox.style.display = 'block';
             detailsBox.style.display = 'none';
+            if (seatCountBadge) seatCountBadge.style.display = 'none';
             return;
         }
 
         noSeatBox.style.display = 'none';
         detailsBox.style.display = 'block';
+        if (seatCountBadge) {
+            seatCountBadge.style.display = 'inline-block';
+            seatCountBadge.innerText = `${selectedSeats.size} ${selectedSeats.size === 1 ? 'Seat' : 'Seats'}`;
+        }
+        if (seatsSelectedPill) {
+            seatsSelectedPill.innerText = `${selectedSeats.size} selected`;
+        }
 
         seatsListDiv.innerHTML = '';
         let total = 0.0;
@@ -204,13 +197,13 @@
         selectedSeats.forEach((seat, id) => {
             total += seat.price;
             const item = document.createElement('div');
-            item.className = 'p-2 rounded bg-light border small';
+            item.className = 'p-2 rounded bg-dark border border-secondary border-opacity-25 small';
             item.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center">
-                    <strong class="text-dark">Seat ${seat.number} (${seat.type})</strong>
-                    <span class="fw-bold text-danger">₹${seat.price.toFixed(2)}</span>
+                    <strong class="text-white">Seat ${seat.number} <span class="badge bg-secondary ms-1" style="font-size:0.7rem;">${seat.type}</span></strong>
+                    <span class="fw-bold text-accent">₹${seat.price.toFixed(2)}</span>
                 </div>
-                <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-eye-fill text-warning"></i> ${seat.comfort}</div>
+                <div class="text-secondary" style="font-size:0.75rem;"><i class="bi bi-eye-fill text-accent me-1"></i> ${seat.comfort}</div>
             `;
             seatsListDiv.appendChild(item);
         });
@@ -228,7 +221,7 @@
         if (selectedSeats.size === 0) return;
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Locking seats...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Locking seats...';
 
         const seatIds = Array.from(selectedSeats.keys());
 
@@ -251,13 +244,13 @@
                 errorAlert.innerText = data.message || 'Seat reservation conflict. Please try another seat.';
                 errorAlert.style.display = 'block';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-lock-fill"></i> Lock Seats & Checkout';
+                btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Lock Seats &amp; Checkout';
             }
         } catch (err) {
             errorAlert.innerText = 'Network error. Please try again.';
             errorAlert.style.display = 'block';
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-lock-fill"></i> Lock Seats & Checkout';
+            btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Lock Seats &amp; Checkout';
         }
     }
 </script>

@@ -59,9 +59,38 @@ public class TheatreRepository {
         return 0;
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public boolean delete(int theatreId) {
+        // Cascade cleanup shows and seats belonging to this theatre
+        List<Integer> showIds = jdbcTemplate.queryForList("SELECT show_id FROM shows WHERE theatre_id = ?", Integer.class, theatreId);
+        for (Integer showId : showIds) {
+            List<Integer> seatIds = jdbcTemplate.queryForList("SELECT seat_id FROM seats WHERE show_id = ?", Integer.class, showId);
+            if (!seatIds.isEmpty()) {
+                String inSql = String.join(",", seatIds.stream().map(String::valueOf).toList());
+                jdbcTemplate.update("DELETE FROM auctions WHERE seat_id IN (" + inSql + ")");
+                jdbcTemplate.update("DELETE FROM booking_seats WHERE seat_id IN (" + inSql + ")");
+            }
+            List<Integer> bookingIds = jdbcTemplate.queryForList("SELECT booking_id FROM bookings WHERE show_id = ?", Integer.class, showId);
+            for (Integer bookingId : bookingIds) {
+                jdbcTemplate.update("DELETE FROM booking_seats WHERE booking_id = ?", bookingId);
+            }
+            jdbcTemplate.update("DELETE FROM bookings WHERE show_id = ?", showId);
+            jdbcTemplate.update("DELETE FROM seats WHERE show_id = ?", showId);
+        }
+        jdbcTemplate.update("DELETE FROM shows WHERE theatre_id = ?", theatreId);
         String sql = "DELETE FROM theatres WHERE theatre_id = ?";
         return jdbcTemplate.update(sql, theatreId) > 0;
+    }
+
+    public boolean update(Theatre theatre) {
+        String sql = "UPDATE theatres SET name = ?, location = ?, city = ?, latitude = ?, longitude = ? WHERE theatre_id = ?";
+        return jdbcTemplate.update(sql,
+                theatre.getName(),
+                theatre.getAddress(),
+                theatre.getCity(),
+                theatre.getLatitude() != 0.0 ? theatre.getLatitude() : 19.0760,
+                theatre.getLongitude() != 0.0 ? theatre.getLongitude() : 72.8777,
+                theatre.getTheatreId()) > 0;
     }
 
     private static class TheatreRowMapper implements RowMapper<Theatre> {

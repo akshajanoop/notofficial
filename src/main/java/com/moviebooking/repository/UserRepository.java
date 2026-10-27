@@ -62,7 +62,7 @@ public class UserRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"USER_ID"});
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
@@ -70,8 +70,21 @@ public class UserRepository {
             return ps;
         }, keyHolder);
 
-        Number key = keyHolder.getKey();
-        int userId = key != null ? key.intValue() : 0;
+        int userId = 0;
+        if (keyHolder.getKeys() != null && keyHolder.getKeys().containsKey("USER_ID")) {
+            Object idVal = keyHolder.getKeys().get("USER_ID");
+            if (idVal instanceof Number) {
+                userId = ((Number) idVal).intValue();
+            }
+        } else if (keyHolder.getKey() != null) {
+            userId = keyHolder.getKey().intValue();
+        } else {
+            // Fallback query if keys map wasn't populated as expected
+            Optional<User> found = findByEmail(user.getEmail());
+            if (found.isPresent()) {
+                userId = found.get().getUserId();
+            }
+        }
         user.setUserId(userId);
         return userId;
     }

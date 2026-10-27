@@ -1,18 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Home')}"></head>
-<body>
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
-<!-- Hero Section -->
-<header class="bg-dark text-white py-5 mb-4 shadow-sm" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;">
-    <div class="container py-4 text-center">
-        <h1 class="display-4 fw-bold mb-3">Book Movies, Win Live Seat Auctions</h1>
-        <p class="lead mb-4 text-light">Experience interactive seat booking, real-time live auctions for premium seats, and loyalty cashback on every ticket!</p>
-        <div class="d-flex justify-content-center gap-2">
-            <a href="#movies-section" class="btn btn-danger btn-lg px-4 fw-semibold"><i class="bi bi-play-circle"></i> Browse Movies</a>
-            <a th:if="${session.userId == null}" th:href="@{/login}" class="btn btn-outline-light btn-lg px-4"><i class="bi bi-box-arrow-in-right"></i> Sign In</a>
+<!-- Modern Hero Section -->
+<header class="position-relative py-5 mb-5 overflow-hidden" 
+        style="background: radial-gradient(circle at 50% 20%, rgba(255, 106, 0, 0.18) 0%, rgba(11, 12, 16, 0.95) 70%), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat; min-height: 420px;">
+    <div class="position-absolute w-100 h-100 top-0 start-0" style="background: linear-gradient(180deg, rgba(11,12,16,0.2) 0%, var(--bg-main) 100%); pointer-events: none;"></div>
+    <div class="container py-5 text-center position-relative" style="z-index: 2;">
+        <span class="badge bg-accent bg-opacity-25 text-accent border border-accent border-opacity-50 px-3 py-2 mb-3 rounded-pill fw-semibold">
+            <i class="bi bi-sparkles me-1"></i> Next-Gen Cinema Experience
+        </span>
+        <h1 class="display-3 fw-bold mb-3 text-white font-heading" style="text-shadow: 0 4px 20px rgba(0,0,0,0.8);">
+            Book Movies. Win Live Auctions.
+        </h1>
+        <p class="lead mb-4 text-light opacity-75 mx-auto" style="max-width: 680px; font-weight: 400;">
+            Interactive visual seat selection, real-time live seat bidding, Dolby Atmos theatre discovery, and automatic loyalty cashback on every ticket.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="#movies-section" class="btn btn-danger btn-lg px-4 rounded-pill fw-bold shadow-lg">
+                <i class="bi bi-film me-2"></i> Explore Now Showing
+            </a>
+            <a th:if="${session.userId == null}" th:href="@{/login}" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+            </a>
+            <a th:if="${session.userId != null}" th:href="@{/profile}" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-semibold">
+                <i class="bi bi-person me-2"></i> My Account
+            </a>
         </div>
     </div>
 </header>
@@ -20,18 +36,21 @@
 <main class="container mb-5">
 
     <!-- 1. "For You" Personalized Recommendations Carousel -->
-    <section class="mb-5" th:if="${forYou != null and !forYou.isEmpty()}">
-        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+    <section class="mb-5" th:if="${forYou != null and !forYou.isEmpty()}" data-reveal>
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary border-opacity-25">
             <div>
-                <h3 class="fw-bold mb-0 text-dark"><i class="bi bi-stars text-warning"></i> Recommended For You</h3>
-                <p class="text-muted small mb-0">Personalized suggestions tailored to your genre taste</p>
+                <h3 class="fw-bold mb-0 text-white font-heading">
+                    <i class="bi bi-sparkles text-accent me-2"></i>Recommended For You
+                </h3>
+                <p class="text-secondary small mb-0">Curated theatrical titles matching your booking history</p>
             </div>
+            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-50">Personalized</span>
         </div>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
             <div class="col" th:each="movie : ${forYou}">
-                <div class="card h-100 movie-card shadow-sm border-0">
-                    <div style="height: 220px; overflow: hidden; position: relative;">
+                <div class="card h-100 movie-card shadow-sm border-0 glass-card">
+                    <div style="height: 240px; overflow: hidden; position: relative;">
                         <img th:if="${movie.posterUrl != null and movie.posterUrl.startsWith('http')}" 
                              th:src="${movie.posterUrl}" 
                              class="card-img-top w-100 h-100 object-fit-cover" 
@@ -39,19 +58,27 @@
                         <div th:unless="${movie.posterUrl != null and movie.posterUrl.startsWith('http')}" class="movie-poster-placeholder">
                             <i class="bi bi-film"></i>
                         </div>
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-warning text-dark fw-bold shadow-sm">
+                                <i class="bi bi-star-fill me-1"></i><span th:text="${movie.rating}">8.5</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-danger" th:text="${movie.genre}">Action</span>
-                            <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> <span th:text="${movie.rating}">8.5</span></span>
+                            <span class="badge bg-accent" th:text="${movie.genre}">Action</span>
+                            <small class="text-secondary"><i class="bi bi-clock me-1"></i><span th:text="${movie.durationMinutes}">120</span>m</small>
                         </div>
-                        <h5 class="card-title fw-bold mb-1" th:text="${movie.title}">Movie Title</h5>
-                        <div class="small text-muted mb-2" th:if="${movie.director != null}">
-                            <i class="bi bi-camera-reels text-danger"></i> <strong>Dir:</strong> <span th:text="${movie.director}">Director</span>
+                        <h5 class="card-title fw-bold text-white mb-1" th:text="${movie.title}">Movie Title</h5>
+                        <div class="small text-secondary mb-2" th:if="${movie.director != null}">
+                            <i class="bi bi-camera-reels text-accent me-1"></i> <span th:text="${movie.director}">Director</span>
                         </div>
-                        <p class="card-text text-muted small flex-grow-1" th:text="${#strings.abbreviate(movie.description, 80)}">Description</p>
-                        <a th:href="@{/movies/{id}/shows(id=${movie.movieId})}" class="btn btn-outline-danger btn-sm mt-auto w-100 fw-semibold">
-                            Book Showtimes <i class="bi bi-arrow-right"></i>
+                        <p class="card-text text-secondary small flex-grow-1" th:text="${#strings.abbreviate(movie.description, 75)}">Description</p>
+                        <a th:if="${session.isAdmin}" th:href="@{/admin}" class="btn btn-outline-warning btn-sm mt-3 w-100 fw-semibold rounded-pill">
+                            <i class="bi bi-shield-lock me-1"></i> Admin View
+                        </a>
+                        <a th:unless="${session.isAdmin}" th:href="@{/movies/{id}/shows(id=${movie.movieId})}" class="btn btn-outline-accent btn-sm mt-3 w-100 fw-semibold rounded-pill">
+                            Book Tickets <i class="bi bi-arrow-right ms-1"></i>
                         </a>
                     </div>
                 </div>
@@ -60,34 +87,40 @@
     </section>
 
     <!-- 2. "Near You" Location-Based Theatre Distance Tracker -->
-    <section class="mb-5">
-        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 border-bottom pb-2">
+    <section class="mb-5" data-reveal>
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary border-opacity-25">
             <div>
-                <h3 class="fw-bold mb-0 text-dark"><i class="bi bi-geo-alt-fill text-danger"></i> Theatres Near You</h3>
-                <p class="text-muted small mb-0" id="location-status">Showing cinemas in your area</p>
+                <h3 class="fw-bold mb-0 text-white font-heading">
+                    <i class="bi bi-geo-alt-fill text-accent me-2"></i>Cinemas Near You
+                </h3>
+                <p class="text-secondary small mb-0" id="location-status">Showing active cinemas in your region</p>
             </div>
             <!-- GPS Location Detect Button -->
-            <button type="button" class="btn btn-outline-danger btn-sm mt-2 mt-md-0 fw-semibold" id="detect-gps-btn" onclick="detectUserLocation()">
-                <i class="bi bi-crosshair"></i> Use My GPS Location (Calculate Exact Distance)
+            <button type="button" class="btn btn-outline-accent btn-sm mt-2 mt-md-0 fw-semibold rounded-pill px-3" id="detect-gps-btn" onclick="detectUserLocation()">
+                <i class="bi bi-crosshair me-1"></i> Calculate Exact GPS Distance
             </button>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3" id="theatres-container">
             <div class="col" th:each="theatre : ${theatres}">
-                <div class="card border-0 bg-white shadow-sm p-3 h-100 rounded-3 position-relative">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle me-3">
+                <div class="card border-0 glass-card p-3 h-100 rounded-3 position-relative hover-lift">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-accent bg-opacity-25 text-accent p-2 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                             <i class="bi bi-building fs-5"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-0" th:text="${theatre.name}">PVR Cinemas</h6>
-                            <span class="badge bg-secondary text-white small" th:text="${theatre.city}">City</span>
+                            <h6 class="fw-bold mb-0 text-white" th:text="${theatre.name}">PVR Cinemas</h6>
+                            <span class="badge bg-secondary text-secondary small mt-1" th:text="${theatre.city}">City</span>
                         </div>
                     </div>
-                    <p class="text-muted small mb-2"><i class="bi bi-pin-map"></i> <span th:text="${theatre.address}">Location address</span></p>
-                    <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center small">
-                        <span class="text-muted"><i class="bi bi-compass"></i> Proximity:</span>
-                        <span class="badge bg-light text-secondary border distance-badge"><i class="bi bi-geo-alt"></i> <span th:text="${theatre.city}">City</span></span>
+                    <p class="text-secondary small mb-3 flex-grow-1">
+                        <i class="bi bi-pin-map text-accent me-1"></i> <span th:text="${theatre.address}">Location address</span>
+                    </p>
+                    <div class="mt-auto pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center small">
+                        <span class="text-secondary"><i class="bi bi-compass me-1"></i> Proximity:</span>
+                        <span class="badge bg-dark text-secondary border border-secondary border-opacity-25 distance-badge">
+                            <i class="bi bi-geo-alt me-1"></i> <span th:text="${theatre.city}">City</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -95,17 +128,19 @@
     </section>
 
     <!-- 3. All Movies Grid with Interactive Genre Filter -->
-    <section id="movies-section">
-        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 border-bottom pb-2">
+    <section id="movies-section" class="mb-5" data-reveal>
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary border-opacity-25">
             <div>
-                <h3 class="fw-bold mb-0 text-dark"><i class="bi bi-camera-reels"></i> Now Showing in Theatres</h3>
-                <p class="text-muted small mb-0">Browse real theatrical blockbusters and book your seats</p>
+                <h3 class="fw-bold mb-0 text-white font-heading">
+                    <i class="bi bi-camera-reels text-accent me-2"></i>Now Showing in Theatres
+                </h3>
+                <p class="text-secondary small mb-0">Select your blockbuster and reserve interactive auditorium seats</p>
             </div>
 
             <!-- Dynamic Genre Filter Pills -->
-            <div class="btn-group mt-2 mt-md-0" role="group">
-                <button type="button" class="btn btn-outline-dark btn-sm active genre-filter-btn" onclick="filterGenre('ALL', this)">All</button>
-                <button type="button" class="btn btn-outline-dark btn-sm genre-filter-btn" 
+            <div class="btn-group mt-2 mt-md-0 bg-dark p-1 rounded-pill border border-secondary border-opacity-25" role="group">
+                <button type="button" class="btn btn-sm btn-outline-light rounded-pill active genre-filter-btn px-3" onclick="filterGenre('ALL', this)">All</button>
+                <button type="button" class="btn btn-sm btn-outline-light rounded-pill genre-filter-btn px-3" 
                         th:each="g : ${genres}" 
                         th:text="${g}" 
                         th:attr="onclick='filterGenre(\'' + ${g} + '\', this)'">Genre</button>
@@ -114,8 +149,8 @@
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="movies-grid">
             <div class="col movie-item" th:each="movie : ${movies}" th:attr="data-genre=${movie.genre}">
-                <div class="card h-100 movie-card shadow-sm border-0">
-                    <div style="height: 220px; overflow: hidden; position: relative;">
+                <div class="card h-100 movie-card shadow-sm border-0 glass-card">
+                    <div style="height: 260px; overflow: hidden; position: relative;">
                         <img th:if="${movie.posterUrl != null and movie.posterUrl.startsWith('http')}" 
                              th:src="${movie.posterUrl}" 
                              class="card-img-top w-100 h-100 object-fit-cover" 
@@ -123,26 +158,33 @@
                         <div th:unless="${movie.posterUrl != null and movie.posterUrl.startsWith('http')}" class="movie-poster-placeholder">
                             <i class="bi bi-film"></i>
                         </div>
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-warning text-dark fw-bold shadow-sm">
+                                <i class="bi bi-star-fill me-1"></i><span th:text="${movie.rating}">8.5</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-dark" th:text="${movie.genre}">Genre</span>
-                            <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> <span th:text="${movie.rating}">8.5</span></span>
+                            <span class="badge bg-accent" th:text="${movie.genre}">Genre</span>
+                            <small class="text-secondary"><i class="bi bi-clock me-1"></i><span th:text="${movie.durationMinutes}">120</span>m</small>
                         </div>
-                        <h5 class="card-title fw-bold mb-1" th:text="${movie.title}">Movie Title</h5>
-                        <p class="text-muted small mb-1"><i class="bi bi-clock"></i> <span th:text="${movie.durationMinutes}">120</span> mins</p>
+                        <h5 class="card-title fw-bold text-white mb-1" th:text="${movie.title}">Movie Title</h5>
                         
                         <!-- Director & Cast Badges -->
-                        <div class="small text-muted mb-2" th:if="${movie.director != null}">
-                            <i class="bi bi-camera-reels text-danger"></i> <strong>Dir:</strong> <span th:text="${movie.director}">Director</span>
+                        <div class="small text-secondary mb-1" th:if="${movie.director != null}">
+                            <i class="bi bi-camera-reels text-accent me-1"></i> <strong>Dir:</strong> <span th:text="${movie.director}">Director</span>
                         </div>
-                        <div class="small text-muted mb-2" th:if="${movie.castMembers != null}">
-                            <i class="bi bi-people text-primary"></i> <strong>Cast:</strong> <span th:text="${#strings.abbreviate(movie.castMembers, 40)}">Cast</span>
+                        <div class="small text-secondary mb-2" th:if="${movie.castMembers != null}">
+                            <i class="bi bi-people text-secondary me-1"></i> <strong>Cast:</strong> <span th:text="${#strings.abbreviate(movie.castMembers, 35)}">Cast</span>
                         </div>
 
-                        <p class="card-text text-muted small flex-grow-1" th:text="${#strings.abbreviate(movie.description, 80)}">Description</p>
-                        <a th:href="@{/movies/{id}/shows(id=${movie.movieId})}" class="btn btn-danger btn-sm mt-3 w-100 fw-semibold">
-                            <i class="bi bi-ticket-perforated"></i> Select Shows & Seats
+                        <p class="card-text text-secondary small flex-grow-1" th:text="${#strings.abbreviate(movie.description, 75)}">Description</p>
+                        <a th:if="${session.isAdmin}" th:href="@{/admin}" class="btn btn-outline-warning btn-sm mt-3 w-100 fw-semibold rounded-pill py-2">
+                            <i class="bi bi-shield-lock me-1"></i> Admin View
+                        </a>
+                        <a th:unless="${session.isAdmin}" th:href="@{/movies/{id}/shows(id=${movie.movieId})}" class="btn btn-danger btn-sm mt-3 w-100 fw-semibold rounded-pill py-2">
+                            <i class="bi bi-ticket-perforated me-1"></i> Select Shows &amp; Seats
                         </a>
                     </div>
                 </div>
@@ -165,15 +207,15 @@ function detectUserLocation() {
     }
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Locating...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Locating...';
     status.innerText = "Detecting your GPS coordinates...";
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            status.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill"></i> GPS detected: ${lat.toFixed(4)}, ${lng.toFixed(4)} — Showing nearest cinemas</span>`;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> Location Updated';
+            status.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> GPS detected: ${lat.toFixed(4)}, ${lng.toFixed(4)} — Showing nearest cinemas</span>`;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Location Updated';
 
             try {
                 const res = await fetch(`/api/theatres/nearby?lat=${lat}&lng=${lng}`);
@@ -187,7 +229,7 @@ function detectUserLocation() {
         },
         (error) => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-crosshair"></i> Use My GPS Location';
+            btn.innerHTML = '<i class="bi bi-crosshair me-1"></i> Use My GPS Location';
             status.innerText = "Location permission denied or unavailable. Showing default city cinemas.";
         }
     );
@@ -201,20 +243,20 @@ function renderNearbyTheatres(theatres) {
         const col = document.createElement('div');
         col.className = 'col';
         col.innerHTML = `
-            <div class="card border-0 bg-white shadow-sm p-3 h-100 rounded-3 position-relative">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-circle me-3">
+            <div class="card border-0 glass-card p-3 h-100 rounded-3 position-relative hover-lift">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-accent bg-opacity-25 text-accent p-2 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                         <i class="bi bi-building fs-5"></i>
                     </div>
                     <div>
-                        <h6 class="fw-bold mb-0">${t.name}</h6>
-                        <span class="badge bg-secondary text-white small">${t.city}</span>
+                        <h6 class="fw-bold mb-0 text-white">${t.name}</h6>
+                        <span class="badge bg-secondary text-secondary small mt-1">${t.city}</span>
                     </div>
                 </div>
-                <p class="text-muted small mb-2"><i class="bi bi-pin-map"></i> ${t.address || ''}</p>
-                <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center small">
-                    <span class="text-muted"><i class="bi bi-compass"></i> Proximity:</span>
-                    <span class="badge bg-success text-white fw-bold"><i class="bi bi-geo"></i> ${t.distanceKm} km away</span>
+                <p class="text-secondary small mb-3 flex-grow-1"><i class="bi bi-pin-map text-accent me-1"></i> ${t.address || ''}</p>
+                <div class="mt-auto pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center small">
+                    <span class="text-secondary"><i class="bi bi-compass me-1"></i> Proximity:</span>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 fw-semibold"><i class="bi bi-geo-alt me-1"></i> ${t.distanceKm} km away</span>
                 </div>
             </div>
         `;
@@ -223,8 +265,12 @@ function renderNearbyTheatres(theatres) {
 }
 
 function filterGenre(genre, btnElement) {
-    document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active', 'btn-dark'));
-    btnElement.classList.add('active');
+    document.querySelectorAll('.genre-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'btn-light');
+        btn.classList.add('btn-outline-light');
+    });
+    btnElement.classList.add('active', 'btn-light');
+    btnElement.classList.remove('btn-outline-light');
 
     const items = document.querySelectorAll('.movie-item');
     items.forEach(item => {

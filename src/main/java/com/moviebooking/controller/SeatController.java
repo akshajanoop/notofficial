@@ -39,6 +39,11 @@ public class SeatController {
 
     @GetMapping("/shows/{showId}/seats")
     public String viewSeatMap(@PathVariable("showId") int showId, Model model, HttpSession session) {
+        // Enforce role rule: Administrators cannot book tickets
+        if (Boolean.TRUE.equals(session.getAttribute("isAdmin"))) {
+            return "redirect:/admin?msg=admin_cannot_book";
+        }
+
         Optional<Show> showOpt = showRepository.findById(showId);
         if (showOpt.isEmpty()) {
             return "redirect:/";
@@ -65,6 +70,13 @@ public class SeatController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> lockSeats(@RequestBody Map<String, Object> payload, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+
+        // Enforce role rule: Administrators cannot book tickets
+        if (Boolean.TRUE.equals(session.getAttribute("isAdmin"))) {
+            response.put("success", false);
+            response.put("message", "Administrators are restricted from booking customer tickets. Please use a customer account to purchase tickets.");
+            return ResponseEntity.ok(response);
+        }
 
         if (session.getAttribute("userId") == null) {
             response.put("success", false);

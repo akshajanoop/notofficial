@@ -45,6 +45,11 @@ public class BookingController {
 
     @GetMapping("/checkout")
     public String viewCheckout(HttpSession session, Model model) {
+        // Enforce role rule: Administrators cannot book tickets
+        if (Boolean.TRUE.equals(session.getAttribute("isAdmin"))) {
+            return "redirect:/admin?msg=admin_cannot_book";
+        }
+
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
@@ -79,6 +84,10 @@ public class BookingController {
     public String confirmBooking(@RequestParam(value = "creditsToRedeem", defaultValue = "0") int creditsToRedeem,
                                  HttpSession session,
                                  Model model) {
+        if (Boolean.TRUE.equals(session.getAttribute("isAdmin"))) {
+            return "redirect:/admin?msg=admin_cannot_book";
+        }
+
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";

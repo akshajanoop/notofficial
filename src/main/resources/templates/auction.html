@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Live Ticket Auction - ' + ${auction.seatNumber})}"></head>
-<body class="bg-light">
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
-<main class="container py-5">
+<main class="container py-5" data-reveal>
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Auction Status Header Card -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white mb-4">
-                <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3">
+            <div class="card glass-card border-0 shadow-lg rounded-4 p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-3 mb-3">
                     <div>
-                        <span class="badge bg-danger mb-1"><i class="bi bi-broadcast"></i> Live Ticket Auction</span>
-                        <h3 class="fw-bold mb-0 text-dark">
-                            Seat <span th:text="${auction.seatNumber}">F1</span> (Recliner Experience)
+                        <span class="badge bg-accent mb-1"><i class="bi bi-broadcast me-1"></i> Live Ticket Auction</span>
+                        <h3 class="fw-bold mb-0 text-white font-heading">
+                            Seat <span th:text="${auction.seatNumber}">F1</span> (VIP Experience)
                         </h3>
-                        <div class="text-muted small mt-1">
-                            <i class="bi bi-film"></i> <span th:text="${auction.movieTitle}">Movie</span> &nbsp;|&nbsp;
-                            <i class="bi bi-building"></i> <span th:text="${auction.theatreName}">Theatre</span>
+                        <div class="text-secondary small mt-1">
+                            <i class="bi bi-film text-accent me-1"></i> <span th:text="${auction.movieTitle}">Movie</span> &nbsp;|&nbsp;
+                            <i class="bi bi-building text-accent me-1"></i> <span th:text="${auction.theatreName}">Theatre</span>
                         </div>
                     </div>
 
@@ -29,43 +29,42 @@
 
                 <div class="row g-4 text-center my-2">
                     <!-- Real-Time Countdown Timer -->
-                    <div class="col-md-6 border-end">
-                        <div class="text-muted small text-uppercase fw-semibold mb-1">Time Remaining</div>
-                        <div id="countdown-timer" class="auction-timer">--:--:--</div>
-                        <small class="text-muted" id="timer-status">Auction closing shortly</small>
+                    <div class="col-md-6 border-end border-secondary border-opacity-25">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-1" style="letter-spacing: 1px;">Time Remaining</div>
+                        <div id="countdown-timer" class="auction-timer text-accent">--:--:--</div>
+                        <small class="text-secondary" id="timer-status">Auction closing shortly</small>
                     </div>
 
                     <!-- Current Highest Bid -->
                     <div class="col-md-6">
-                        <div class="text-muted small text-uppercase fw-semibold mb-1">Current Highest Bid</div>
-                        <div class="display-5 fw-bold text-success">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-1" style="letter-spacing: 1px;">Current Highest Bid</div>
+                        <div class="display-4 fw-bold text-success font-heading">
                             ₹<span id="current-bid" th:text="${#numbers.formatDecimal(auction.currentBid, 1, 2)}">600.00</span>
                         </div>
-                        <small class="text-muted">
-                            Highest Bidder: <strong id="highest-bidder" th:text="${auction.highestBidderName != null ? auction.highestBidderName : 'No bids yet'}">Alice Smith</strong>
+                        <small class="text-secondary">
+                            Highest Bidder: <strong class="text-accent" id="highest-bidder" th:text="${auction.highestBidderName != null ? auction.highestBidderName : 'No bids yet'}">Alice Smith</strong>
                         </small>
                     </div>
                 </div>
             </div>
 
             <!-- Bidding Action Form Card -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
-                <h5 class="fw-bold mb-3"><i class="bi bi-hammer"></i> Place Your Bid</h5>
-                <p class="text-muted small">Enter an amount higher than the current bid to take the lead. When the timer expires, the highest bidder automatically wins the ticket.</p>
+            <div class="card glass-card border-0 shadow-lg rounded-4 p-4">
+                <h5 class="fw-bold mb-3 text-white font-heading"><i class="bi bi-hammer text-accent me-2"></i>Place Your Bid</h5>
 
                 <div id="bid-feedback" class="alert py-2 small" style="display: none;"></div>
 
                 <div class="input-group input-group-lg mb-3">
-                    <span class="input-group-text bg-light fw-bold">₹</span>
-                    <input type="number" id="bid-input" class="form-control" placeholder="Enter bid amount" step="50" min="1">
-                    <button class="btn btn-danger px-4 fw-bold" id="submit-bid-btn" onclick="submitBid()">
-                        <i class="bi bi-arrow-up-circle"></i> Place Bid
+                    <span class="input-group-text bg-dark border-secondary border-opacity-25 text-accent fw-bold">₹</span>
+                    <input type="number" id="bid-input" class="form-control bg-dark border-secondary border-opacity-25 text-white" placeholder="Enter bid amount" step="50" min="1">
+                    <button class="btn btn-accent px-4 fw-bold" id="submit-bid-btn" onclick="submitBid()">
+                        <i class="bi bi-arrow-up-circle me-1"></i> Place Bid
                     </button>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center text-muted small border-top pt-3">
-                    <span><i class="bi bi-shield-check text-success"></i> Real-time synchronized bid processing</span>
-                    <span><i class="bi bi-arrow-repeat"></i> Auto-refreshes every 3 seconds</span>
+                <div class="d-flex justify-content-between align-items-center text-secondary small border-top border-secondary border-opacity-25 pt-3">
+                    <span><i class="bi bi-shield-check text-success me-1"></i> Real-time synchronized bid processing</span>
+                    <span><i class="bi bi-arrow-repeat text-info me-1"></i> Auto-refreshes every 3 seconds</span>
                 </div>
             </div>
         </div>
@@ -146,7 +145,7 @@
         }
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Submitting...';
 
         try {
             const res = await fetch(`/api/auction/${auctionId}/bid`, {
@@ -178,7 +177,7 @@
             feedback.style.display = 'block';
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-arrow-up-circle"></i> Place Bid';
+            btn.innerHTML = '<i class="bi bi-arrow-up-circle me-1"></i> Place Bid';
         }
     }
 </script>

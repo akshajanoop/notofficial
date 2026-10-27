@@ -35,7 +35,7 @@ public class BookingRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"BOOKING_ID"});
             ps.setInt(1, booking.getUserId());
             ps.setInt(2, booking.getShowId());
             ps.setDouble(3, booking.getTotalAmount());
@@ -45,8 +45,15 @@ public class BookingRepository {
             return ps;
         }, keyHolder);
 
-        Number key = keyHolder.getKey();
-        int bookingId = key != null ? key.intValue() : 0;
+        int bookingId = 0;
+        if (keyHolder.getKeys() != null && keyHolder.getKeys().containsKey("BOOKING_ID")) {
+            Object idVal = keyHolder.getKeys().get("BOOKING_ID");
+            if (idVal instanceof Number) {
+                bookingId = ((Number) idVal).intValue();
+            }
+        } else if (keyHolder.getKey() != null) {
+            bookingId = keyHolder.getKey().intValue();
+        }
         booking.setBookingId(bookingId);
         return bookingId;
     }
@@ -126,6 +133,53 @@ public class BookingRepository {
             WHERE b.user_id = ? AND m.genre IS NOT NULL
         """;
         return jdbcTemplate.queryForList(sql, String.class, userId);
+    }
+
+    /**
+     * Retrieve all bookings across the entire system for Administrator review and management.
+     */
+    public List<Booking> findAll() {
+        String sql = """
+            SELECT b.*, m.title AS movie_title, t.name AS theatre_name
+            FROM bookings b
+            JOIN shows s ON b.show_id = s.show_id
+            JOIN movies m ON s.movie_id = m.movie_id
+            JOIN theatres t ON s.theatre_id = t.theatre_id
+            ORDER BY b.created_at DESC
+        """;
+        List<Booking> bookings = jdbcTemplate.query(sql, new BookingRowMapper());
+        for (Booking b : bookings) {
+            b.setSeats(findSeatsByBookingId(b.getBookingId()));
+        }
+        return bookings;
+    }
+
+    /**
+     * Update the status of an existing customer booking (e.g. CONFIRMED, CANCELLED, REFUNDED).
+     */
+    public void updateStatus(int bookingId, String status) {
+        String sql = "UPDATE bookings SET status = ? WHERE booking_id = ?";
+        jdbcTemplate.update(sql, status, bookingId);
+
+        // If marked CANCELLED or REFUNDED, automatically release seats back to AVAILABLE
+        if ("CANCELLED".equalsIgnoreCase(status) || "REFUNDED".equalsIgnoreCase(status)) {
+            List<Seat> seats = findSeatsByBookingId(bookingId);
+            for (Seat s : seats) {
+                jdbcTemplate.update("UPDATE seats SET status = 'AVAILABLE' WHERE seat_id = ?", s.getSeatId());
+            }
+        }
+    }
+
+    /**
+     * Completely remove a booking from the database and free up all reserved seats.
+     */
+    public void delete(int bookingId) {
+        List<Seat> seats = findSeatsByBookingId(bookingId);
+        for (Seat s : seats) {
+            jdbcTemplate.update("UPDATE seats SET status = 'AVAILABLE' WHERE seat_id = ?", s.getSeatId());
+        }
+        jdbcTemplate.update("DELETE FROM booking_seats WHERE booking_id = ?", bookingId);
+        jdbcTemplate.update("DELETE FROM bookings WHERE booking_id = ?", bookingId);
     }
 
     private static class BookingRowMapper implements RowMapper<Booking> {

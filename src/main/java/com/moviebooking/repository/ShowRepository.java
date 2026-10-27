@@ -84,9 +84,36 @@ public class ShowRepository {
         return 0;
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public boolean delete(int showId) {
+        // 1. Find all seats belonging to this show
+        List<Integer> seatIds = jdbcTemplate.queryForList("SELECT seat_id FROM seats WHERE show_id = ?", Integer.class, showId);
+        if (!seatIds.isEmpty()) {
+            String inSql = String.join(",", seatIds.stream().map(String::valueOf).toList());
+            jdbcTemplate.update("DELETE FROM auctions WHERE seat_id IN (" + inSql + ")");
+            jdbcTemplate.update("DELETE FROM booking_seats WHERE seat_id IN (" + inSql + ")");
+        }
+        // 2. Delete bookings for this show
+        List<Integer> bookingIds = jdbcTemplate.queryForList("SELECT booking_id FROM bookings WHERE show_id = ?", Integer.class, showId);
+        for (Integer bookingId : bookingIds) {
+            jdbcTemplate.update("DELETE FROM booking_seats WHERE booking_id = ?", bookingId);
+        }
+        jdbcTemplate.update("DELETE FROM bookings WHERE show_id = ?", showId);
+        // 3. Delete seats
+        jdbcTemplate.update("DELETE FROM seats WHERE show_id = ?", showId);
+        // 4. Delete show
         String sql = "DELETE FROM shows WHERE show_id = ?";
         return jdbcTemplate.update(sql, showId) > 0;
+    }
+
+    public boolean update(Show show) {
+        String sql = "UPDATE shows SET movie_id = ?, theatre_id = ?, show_time = ?, show_date = ? WHERE show_id = ?";
+        return jdbcTemplate.update(sql,
+                show.getMovieId(),
+                show.getTheatreId(),
+                java.sql.Time.valueOf(show.getShowTime().toLocalTime()),
+                java.sql.Date.valueOf(show.getShowTime().toLocalDate()),
+                show.getShowId()) > 0;
     }
 
     private static class ShowRowMapper implements RowMapper<Show> {

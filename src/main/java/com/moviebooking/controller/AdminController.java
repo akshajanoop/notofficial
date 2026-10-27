@@ -1,8 +1,10 @@
 package com.moviebooking.controller;
 
+import com.moviebooking.model.Booking;
 import com.moviebooking.model.Movie;
 import com.moviebooking.model.Show;
 import com.moviebooking.model.Theatre;
+import com.moviebooking.repository.BookingRepository;
 import com.moviebooking.repository.MovieRepository;
 import com.moviebooking.repository.SeatRepository;
 import com.moviebooking.repository.ShowRepository;
@@ -34,15 +36,18 @@ public class AdminController {
     private final TheatreRepository theatreRepository;
     private final ShowRepository showRepository;
     private final SeatRepository seatRepository;
+    private final BookingRepository bookingRepository;
 
     public AdminController(MovieRepository movieRepository,
                            TheatreRepository theatreRepository,
                            ShowRepository showRepository,
-                           SeatRepository seatRepository) {
+                           SeatRepository seatRepository,
+                           BookingRepository bookingRepository) {
         this.movieRepository   = movieRepository;
         this.theatreRepository = theatreRepository;
         this.showRepository    = showRepository;
         this.seatRepository    = seatRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     private boolean checkNotAdmin(HttpSession session) {
@@ -59,10 +64,12 @@ public class AdminController {
         List<Movie> movies     = movieRepository.findAll();
         List<Theatre> theatres = theatreRepository.findAll();
         List<Show> shows       = showRepository.findAll();
+        List<Booking> bookings = bookingRepository.findAll();
 
         model.addAttribute("movies", movies);
         model.addAttribute("theatres", theatres);
         model.addAttribute("shows", shows);
+        model.addAttribute("bookings", bookings);
         model.addAttribute("msg", msg);
         model.addAttribute("today", LocalDate.now().toString());
 
@@ -115,6 +122,43 @@ public class AdminController {
         return "redirect:/admin?msg=movie_deleted";
     }
 
+    @PostMapping("/movies/edit")
+    public String editMovie(HttpSession session,
+                            @RequestParam int movieId,
+                            @RequestParam String title,
+                            @RequestParam(required = false, defaultValue = "Action") String genre,
+                            @RequestParam(required = false, defaultValue = "") String description,
+                            @RequestParam(required = false) String posterUrl,
+                            @RequestParam(defaultValue = "7.5") double rating,
+                            @RequestParam(defaultValue = "120") int durationMinutes,
+                            @RequestParam(required = false, defaultValue = "Renowned Director") String director,
+                            @RequestParam(required = false, defaultValue = "Lead Actor, Supporting Cast") String castMembers) {
+
+        if (checkNotAdmin(session)) {
+            return "redirect:/login?error=admin_required";
+        }
+
+        if (posterUrl == null || posterUrl.trim().isEmpty()) {
+            posterUrl = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80";
+        }
+
+        Movie movie = new Movie();
+        movie.setMovieId(movieId);
+        movie.setTitle(title.trim());
+        movie.setGenre(genre.trim());
+        movie.setDescription(description.trim());
+        movie.setPosterUrl(posterUrl.trim());
+        movie.setRating(rating);
+        movie.setDurationMinutes(durationMinutes);
+        movie.setDirector(director.trim());
+        movie.setCastMembers(castMembers.trim());
+        movie.setCrewMembers(director.trim() + " (Director)");
+
+        movieRepository.update(movie);
+
+        return "redirect:/admin?msg=movie_updated";
+    }
+
     // --- THEATRE OPERATIONS ---
 
     @PostMapping("/theatres/add")
@@ -148,6 +192,32 @@ public class AdminController {
         }
         theatreRepository.delete(theatreId);
         return "redirect:/admin?msg=theatre_deleted";
+    }
+
+    @PostMapping("/theatres/edit")
+    public String editTheatre(HttpSession session,
+                              @RequestParam int theatreId,
+                              @RequestParam String name,
+                              @RequestParam String city,
+                              @RequestParam String address,
+                              @RequestParam(defaultValue = "19.0760") double latitude,
+                              @RequestParam(defaultValue = "72.8777") double longitude) {
+
+        if (checkNotAdmin(session)) {
+            return "redirect:/login?error=admin_required";
+        }
+
+        Theatre theatre = new Theatre();
+        theatre.setTheatreId(theatreId);
+        theatre.setName(name.trim());
+        theatre.setCity(city.trim());
+        theatre.setAddress(address.trim());
+        theatre.setLatitude(latitude);
+        theatre.setLongitude(longitude);
+
+        theatreRepository.update(theatre);
+
+        return "redirect:/admin?msg=theatre_updated";
     }
 
     // --- SHOW OPERATIONS ---
@@ -186,5 +256,54 @@ public class AdminController {
         }
         showRepository.delete(showId);
         return "redirect:/admin?msg=show_deleted";
+    }
+
+    @PostMapping("/shows/edit")
+    public String editShow(HttpSession session,
+                           @RequestParam int showId,
+                           @RequestParam int movieId,
+                           @RequestParam int theatreId,
+                           @RequestParam String showDate,
+                           @RequestParam String showTime) {
+
+        if (checkNotAdmin(session)) {
+            return "redirect:/login?error=admin_required";
+        }
+
+        Show show = new Show();
+        show.setShowId(showId);
+        show.setMovieId(movieId);
+        show.setTheatreId(theatreId);
+        LocalDate date = LocalDate.parse(showDate);
+        LocalTime time = LocalTime.parse(showTime);
+        show.setShowTime(java.time.LocalDateTime.of(date, time));
+
+        showRepository.update(show);
+
+        return "redirect:/admin?msg=show_updated";
+    }
+
+    // --- BOOKING OPERATIONS (Admin review, modify status, and cancellation) ---
+
+    @PostMapping("/bookings/edit")
+    public String editBookingStatus(HttpSession session,
+                                    @RequestParam int bookingId,
+                                    @RequestParam String status) {
+        if (checkNotAdmin(session)) {
+            return "redirect:/login?error=admin_required";
+        }
+
+        bookingRepository.updateStatus(bookingId, status.trim().toUpperCase());
+        return "redirect:/admin?msg=booking_updated";
+    }
+
+    @PostMapping("/bookings/delete")
+    public String deleteBooking(HttpSession session, @RequestParam int bookingId) {
+        if (checkNotAdmin(session)) {
+            return "redirect:/login?error=admin_required";
+        }
+
+        bookingRepository.delete(bookingId);
+        return "redirect:/admin?msg=booking_deleted";
     }
 }

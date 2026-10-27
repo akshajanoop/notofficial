@@ -69,9 +69,51 @@ public class MovieRepository {
         return 0;
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public boolean delete(int movieId) {
+        // Cascade cleanup child entities linked to this movie's shows to prevent foreign key constraint violations
+        List<Integer> showIds = jdbcTemplate.queryForList("SELECT show_id FROM shows WHERE movie_id = ?", Integer.class, movieId);
+        for (Integer showId : showIds) {
+            deleteShowDependencies(showId);
+        }
+        jdbcTemplate.update("DELETE FROM shows WHERE movie_id = ?", movieId);
         String sql = "DELETE FROM movies WHERE movie_id = ?";
         return jdbcTemplate.update(sql, movieId) > 0;
+    }
+
+    private void deleteShowDependencies(int showId) {
+        // 1. Find all seats belonging to this show
+        List<Integer> seatIds = jdbcTemplate.queryForList("SELECT seat_id FROM seats WHERE show_id = ?", Integer.class, showId);
+        if (!seatIds.isEmpty()) {
+            String inSql = String.join(",", seatIds.stream().map(String::valueOf).toList());
+            // 2. Delete auctions on these seats
+            jdbcTemplate.update("DELETE FROM auctions WHERE seat_id IN (" + inSql + ")");
+            // 3. Delete booking_seats mapping for these seats
+            jdbcTemplate.update("DELETE FROM booking_seats WHERE seat_id IN (" + inSql + ")");
+        }
+        // 4. Delete bookings for this show (booking_seats for this booking cascade or already removed)
+        List<Integer> bookingIds = jdbcTemplate.queryForList("SELECT booking_id FROM bookings WHERE show_id = ?", Integer.class, showId);
+        for (Integer bookingId : bookingIds) {
+            jdbcTemplate.update("DELETE FROM booking_seats WHERE booking_id = ?", bookingId);
+        }
+        jdbcTemplate.update("DELETE FROM bookings WHERE show_id = ?", showId);
+        // 5. Delete seats
+        jdbcTemplate.update("DELETE FROM seats WHERE show_id = ?", showId);
+    }
+
+    public boolean update(Movie movie) {
+        String sql = "UPDATE movies SET title = ?, genre = ?, description = ?, poster_url = ?, rating = ?, duration_mins = ?, director = ?, cast_members = ?, crew_members = ? WHERE movie_id = ?";
+        return jdbcTemplate.update(sql,
+                movie.getTitle(),
+                movie.getGenre(),
+                movie.getDescription(),
+                movie.getPosterUrl(),
+                movie.getRating(),
+                movie.getDurationMinutes(),
+                movie.getDirector(),
+                movie.getCastMembers(),
+                movie.getCrewMembers(),
+                movie.getMovieId()) > 0;
     }
 
     public List<Movie> findTopRated(int limit) {

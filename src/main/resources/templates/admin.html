@@ -28,12 +28,20 @@
         <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> New movie was added to the catalog.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <div th:if="${msg == 'movie_updated'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Movie details have been updated.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
     <div th:if="${msg == 'movie_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
         <i class="bi bi-trash-fill me-2"></i> Movie removed from catalog.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     <div th:if="${msg == 'theatre_added'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
         <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> New cinema hall was added to the network.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'theatre_updated'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Cinema hall details have been updated.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     <div th:if="${msg == 'theatre_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
@@ -44,48 +52,75 @@
         <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Show scheduled and 30-seat grid automatically created!
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <div th:if="${msg == 'show_updated'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Show schedule has been updated.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
     <div th:if="${msg == 'show_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
         <i class="bi bi-trash-fill me-2"></i> Show schedule deleted.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <div th:if="${msg == 'booking_updated'}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Booking status has been updated.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'booking_deleted'}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-trash-fill me-2"></i> Booking cancelled and reserved seats have been released back to available.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${msg == 'admin_cannot_book'}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <strong>Booking Restriction:</strong> Administrator accounts cannot purchase tickets or reserve auditorium seats. Ticket bookings are strictly reserved for customer accounts.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
-    <!-- Quick Stats Cards -->
+    <!-- Quick Stats Cards (4 Columns) -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card p-3 text-center shadow-sm">
                 <div class="fs-4 fw-bold text-danger" th:text="${#lists.size(movies)}">0</div>
                 <div class="text-secondary small text-uppercase">Movies in Catalog</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card p-3 text-center shadow-sm">
                 <div class="fs-4 fw-bold text-warning" th:text="${#lists.size(theatres)}">0</div>
                 <div class="text-secondary small text-uppercase">Theatres Active</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-black border-secondary p-3 text-center shadow-sm">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card p-3 text-center shadow-sm">
                 <div class="fs-4 fw-bold text-info" th:text="${#lists.size(shows)}">0</div>
                 <div class="text-secondary small text-uppercase">Scheduled Shows</div>
             </div>
         </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card p-3 text-center shadow-sm">
+                <div class="fs-4 fw-bold text-success" th:text="${#lists.size(bookings)}">0</div>
+                <div class="text-secondary small text-uppercase">Total Bookings</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Nav Tabs for Navigation -->
-    <ul class="nav nav-pills mb-4 nav-justified bg-black p-2 rounded border border-secondary" id="adminTabs" role="tablist">
+    <!-- Nav Tabs for Navigation (4 Tabs) -->
+    <ul class="nav nav-pills mb-4 nav-justified bg-dark p-2 rounded-pill border border-secondary border-opacity-25" id="adminTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active fw-bold" id="movies-tab" data-bs-toggle="tab" data-bs-target="#movies" type="button" role="tab">
-                <i class="bi bi-film"></i> Movies
+            <button class="nav-link active fw-bold rounded-pill" id="movies-tab" data-bs-toggle="tab" data-bs-target="#movies" type="button" role="tab">
+                <i class="bi bi-film me-1"></i> Movies
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="theatres-tab" data-bs-toggle="tab" data-bs-target="#theatres" type="button" role="tab">
-                <i class="bi bi-building"></i> Theatres & Cinemas
+            <button class="nav-link fw-bold rounded-pill" id="theatres-tab" data-bs-toggle="tab" data-bs-target="#theatres" type="button" role="tab">
+                <i class="bi bi-building me-1"></i> Theatres &amp; Cinemas
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="shows-tab" data-bs-toggle="tab" data-bs-target="#shows" type="button" role="tab">
-                <i class="bi bi-calendar-event"></i> Show Scheduling
+            <button class="nav-link fw-bold rounded-pill" id="shows-tab" data-bs-toggle="tab" data-bs-target="#shows" type="button" role="tab">
+                <i class="bi bi-calendar-event me-1"></i> Show Scheduling
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold rounded-pill" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
+                <i class="bi bi-ticket-detailed me-1"></i> Customer Bookings
             </button>
         </li>
     </ul>
@@ -134,7 +169,6 @@
                                 <div class="mb-3">
                                     <label class="form-label text-light small fw-bold">Poster Image URL</label>
                                     <input type="url" name="posterUrl" class="form-control bg-dark text-light border-secondary" placeholder="https://example.com/poster.jpg (Optional)">
-                                    <small class="text-secondary">Leave blank to use a high-definition default cinema poster</small>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label text-light small fw-bold">Director</label>
@@ -192,9 +226,12 @@
                                                 </span>
                                             </td>
                                             <td class="text-end">
-                                                <form th:action="@{/admin/movies/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                                <button type="button" class="btn btn-outline-warning btn-sm me-1" data-bs-toggle="modal" th:data-bs-target="'#editMovieModal-' + ${m.movieId}" title="Edit Movie">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <form th:action="@{/admin/movies/delete}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this movie?');">
                                                     <input type="hidden" name="movieId" th:value="${m.movieId}">
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Movie">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -277,9 +314,12 @@
                                                 <small class="text-secondary" th:text="${t.latitude} + ', ' + ${t.longitude}"></small>
                                             </td>
                                             <td class="text-end">
-                                                <form th:action="@{/admin/theatres/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this theatre?');">
+                                                <button type="button" class="btn btn-outline-warning btn-sm me-1" data-bs-toggle="modal" th:data-bs-target="'#editTheatreModal-' + ${t.theatreId}" title="Edit Theatre">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <form th:action="@{/admin/theatres/delete}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this theatre?');">
                                                     <input type="hidden" name="theatreId" th:value="${t.theatreId}">
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Theatre">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -368,9 +408,12 @@
                                                 <span class="badge bg-success" th:text="${s.availableSeats} + ' / 30 seats'"></span>
                                             </td>
                                             <td class="text-end">
-                                                <form th:action="@{/admin/shows/delete}" method="post" onsubmit="return confirm('Delete this scheduled show?');">
+                                                <button type="button" class="btn btn-outline-warning btn-sm me-1" data-bs-toggle="modal" th:data-bs-target="'#editShowModal-' + ${s.showId}" title="Edit Show">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <form th:action="@{/admin/shows/delete}" method="post" class="d-inline" onsubmit="return confirm('Delete this scheduled show?');">
                                                     <input type="hidden" name="showId" th:value="${s.showId}">
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Show">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -385,12 +428,330 @@
             </div>
         </div>
 
+        <!-- TAB 4: CUSTOMER BOOKINGS MANAGEMENT -->
+        <div class="tab-pane fade" id="bookings" role="tabpanel">
+            <div class="card glass-card border-0 shadow rounded-4">
+                <div class="card-header bg-dark text-light fw-bold d-flex justify-content-between align-items-center p-3 border-secondary border-opacity-25">
+                    <span>
+                        <i class="bi bi-ticket-detailed text-success me-2"></i> All Customer Reservations &amp; Bookings (<span th:text="${#lists.size(bookings)}"></span>)
+                    </span>
+                    <span class="badge bg-secondary">System-Wide Real-Time Ledger</span>
+                </div>
+                <div class="card-body p-0">
+                    <div th:if="${bookings.isEmpty()}" class="text-center py-5 text-secondary">
+                        <i class="bi bi-inbox fs-1 opacity-50"></i>
+                        <p class="mt-2">No bookings recorded in the system yet.</p>
+                    </div>
+                    <div class="table-responsive" th:unless="${bookings.isEmpty()}">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="small text-secondary border-bottom border-secondary border-opacity-25">
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Customer ID</th>
+                                    <th>Movie &amp; Theatre</th>
+                                    <th>Reserved Seats</th>
+                                    <th>Amount Paid</th>
+                                    <th>Credits Used</th>
+                                    <th>Status</th>
+                                    <th>Booked Timestamp</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${bookings}">
+                                    <td class="fw-bold text-danger">#CR-<span th:text="${b.bookingId}"></span></td>
+                                    <td>
+                                        <span class="badge bg-dark border border-secondary border-opacity-25 text-light">
+                                            <i class="bi bi-person me-1"></i> User #<span th:text="${b.userId}"></span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-white" th:text="${b.movieTitle}">Movie</div>
+                                        <small class="text-secondary" th:text="${b.theatreName}">Theatre</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <span class="badge bg-secondary" th:each="s : ${b.seats}" th:text="${s.seatNumber}"></span>
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold text-white">₹<span th:text="${#numbers.formatDecimal(b.totalAmount, 1, 2)}"></span></td>
+                                    <td><span class="text-warning fw-semibold" th:text="${b.creditsUsed} + ' pts'"></span></td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${b.status == 'CONFIRMED' ? 'bg-success' : (b.status == 'CANCELLED' ? 'bg-danger' : 'bg-warning text-dark')}"
+                                              th:text="${b.status}">CONFIRMED</span>
+                                    </td>
+                                    <td class="text-secondary small" th:text="${#temporals.format(b.createdAt, 'dd MMM yyyy, hh:mm a')}"></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-outline-warning btn-sm me-1 rounded-pill px-3" data-bs-toggle="modal" th:data-bs-target="'#editBookingModal-' + ${b.bookingId}" title="Modify Booking Status">
+                                            <i class="bi bi-pencil-square me-1"></i> Status
+                                        </button>
+                                        <form th:action="@{/admin/bookings/delete}" method="post" class="d-inline" onsubmit="return confirm('Cancel this booking and release all seats?');">
+                                            <input type="hidden" name="bookingId" th:value="${b.bookingId}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Delete / Cancel Booking">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
+<!-- ===== EDIT MOVIE MODALS (one modal per movie, pre-filled with current data) ===== -->
+<div th:each="m : ${movies}">
+    <div class="modal fade" th:id="'editMovieModal-' + ${m.movieId}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square text-warning me-2"></i>Edit Movie:
+                        <span class="text-warning" th:text="${m.title}"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/admin/movies/edit}" method="post">
+                    <div class="modal-body">
+                        <!-- Hidden movie ID so the server knows which movie to update -->
+                        <input type="hidden" name="movieId" th:value="${m.movieId}">
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Movie Title *</label>
+                            <input type="text" name="title" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${m.title}" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">Genre *</label>
+                                <select name="genre" class="form-select bg-dark text-light border-secondary">
+                                    <option value="Action" th:selected="${m.genre == 'Action'}">Action</option>
+                                    <option value="Sci-Fi" th:selected="${m.genre == 'Sci-Fi'}">Sci-Fi</option>
+                                    <option value="Romance" th:selected="${m.genre == 'Romance'}">Romance</option>
+                                    <option value="Horror" th:selected="${m.genre == 'Horror'}">Horror</option>
+                                    <option value="Comedy" th:selected="${m.genre == 'Comedy'}">Comedy</option>
+                                    <option value="Thriller" th:selected="${m.genre == 'Thriller'}">Thriller</option>
+                                    <option value="Drama" th:selected="${m.genre == 'Drama'}">Drama</option>
+                                    <option value="Animation" th:selected="${m.genre == 'Animation'}">Animation</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">IMDb Rating (0-10)</label>
+                                <input type="number" step="0.1" min="1.0" max="10.0" name="rating"
+                                       th:value="${m.rating}" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Duration (Minutes)</label>
+                            <input type="number" name="durationMinutes" th:value="${m.durationMinutes}"
+                                   class="form-control bg-dark text-light border-secondary" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Poster Image URL</label>
+                            <input type="url" name="posterUrl" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${m.posterUrl}">
+                            <small class="text-secondary">Leave blank to keep the default poster</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Director</label>
+                            <input type="text" name="director" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${m.director}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Cast Members</label>
+                            <input type="text" name="castMembers" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${m.castMembers}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Plot Description</label>
+                            <textarea name="description" rows="3" class="form-control bg-dark text-light border-secondary"
+                                      th:text="${m.description}"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning fw-bold">
+                            <i class="bi bi-check-lg"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT THEATRE MODALS (one modal per theatre, pre-filled with current data) ===== -->
+<div th:each="t : ${theatres}">
+    <div class="modal fade" th:id="'editTheatreModal-' + ${t.theatreId}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square text-warning me-2"></i>Edit Cinema:
+                        <span class="text-warning" th:text="${t.name}"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/admin/theatres/edit}" method="post">
+                    <div class="modal-body">
+                        <!-- Hidden theatre ID so the server knows which theatre to update -->
+                        <input type="hidden" name="theatreId" th:value="${t.theatreId}">
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Theatre Name *</label>
+                            <input type="text" name="name" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${t.name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">City *</label>
+                            <input type="text" name="city" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${t.city}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Full Address / Location *</label>
+                            <input type="text" name="address" class="form-control bg-dark text-light border-secondary"
+                                   th:value="${t.address}" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">Latitude (GPS)</label>
+                                <input type="number" step="0.0001" name="latitude" th:value="${t.latitude}"
+                                       class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">Longitude (GPS)</label>
+                                <input type="number" step="0.0001" name="longitude" th:value="${t.longitude}"
+                                       class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning fw-bold">
+                            <i class="bi bi-check-lg"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT SHOW MODALS (one modal per show, with movie/theatre dropdowns pre-selected) ===== -->
+<div th:each="s : ${shows}">
+    <div class="modal fade" th:id="'editShowModal-' + ${s.showId}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square text-warning me-2"></i>Edit Show:
+                        <span class="text-warning" th:text="${s.movieTitle}"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/admin/shows/edit}" method="post">
+                    <div class="modal-body">
+                        <!-- Hidden show ID so the server knows which show to update -->
+                        <input type="hidden" name="showId" th:value="${s.showId}">
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Select Movie *</label>
+                            <!-- Dropdown pre-selects the show's current movie -->
+                            <select name="movieId" class="form-select bg-dark text-light border-secondary" required>
+                                <option th:each="m : ${movies}" th:value="${m.movieId}" th:text="${m.title}"
+                                        th:selected="${m.movieId == s.movieId}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold">Select Cinema / Theatre *</label>
+                            <!-- Dropdown pre-selects the show's current theatre -->
+                            <select name="theatreId" class="form-select bg-dark text-light border-secondary" required>
+                                <option th:each="t : ${theatres}" th:value="${t.theatreId}"
+                                        th:text="${t.name} + ' (' + ${t.city} + ')'"
+                                        th:selected="${t.theatreId == s.theatreId}"></option>
+                            </select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">Show Date *</label>
+                                <!-- Pre-fills with the show's current date (yyyy-MM-dd format for date input) -->
+                                <input type="date" name="showDate"
+                                       th:value="${#temporals.format(s.showTime, 'yyyy-MM-dd')}"
+                                       class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-light small fw-bold">Show Time *</label>
+                                <!-- Pre-fills with the show's current time (HH:mm format for time input) -->
+                                <input type="time" name="showTime"
+                                       th:value="${#temporals.format(s.showTime, 'HH:mm')}"
+                                       class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning fw-bold">
+                            <i class="bi bi-check-lg"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT BOOKING STATUS MODALS (one modal per booking) ===== -->
+<div th:each="b : ${bookings}">
+    <div class="modal fade" th:id="'editBookingModal-' + ${b.bookingId}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content glass-card">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-pencil-square text-warning me-2"></i>Modify Booking #CR-<span th:text="${b.bookingId}"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/admin/bookings/edit}" method="post">
+                    <div class="modal-body text-start">
+                        <input type="hidden" name="bookingId" th:value="${b.bookingId}">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Movie &amp; Theatre</label>
+                            <div class="form-control bg-dark text-secondary border-secondary border-opacity-25" readonly>
+                                <span th:text="${b.movieTitle} + ' at ' + ${b.theatreName}"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Total Amount Paid</label>
+                            <div class="form-control bg-dark text-white fw-bold border-secondary border-opacity-25" readonly>
+                                ₹<span th:text="${#numbers.formatDecimal(b.totalAmount, 1, 2)}"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Booking Status *</label>
+                            <select name="status" class="form-select bg-dark text-white border-secondary border-opacity-25" required>
+                                <option value="CONFIRMED" th:selected="${b.status == 'CONFIRMED'}">CONFIRMED (Active Booking)</option>
+                                <option value="CANCELLED" th:selected="${b.status == 'CANCELLED'}">CANCELLED (Release Seats to Available)</option>
+                                <option value="REFUNDED" th:selected="${b.status == 'REFUNDED'}">REFUNDED (Processed &amp; Seats Released)</option>
+                                <option value="PENDING" th:selected="${b.status == 'PENDING'}">PENDING (Payment Under Review)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary border-opacity-25">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning fw-bold rounded-pill px-4">
+                            <i class="bi bi-check-lg me-1"></i> Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer th:replace="~{layout :: footer}"></footer>
-<script th:replace="~{layout :: scripts}"></script>
 
 </body>
 </html>

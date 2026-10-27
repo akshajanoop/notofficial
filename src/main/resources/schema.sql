@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS movies (
     genre         VARCHAR(50)      DEFAULT NULL,
     description   TEXT             DEFAULT NULL,
     poster_url    VARCHAR(500)     DEFAULT NULL,
-    rating        DECIMAL(2,1)     DEFAULT NULL,
+    rating        DECIMAL(3,1)     DEFAULT NULL,
     duration_mins INT              DEFAULT NULL,
     director      VARCHAR(100)     DEFAULT NULL,
     cast_members  VARCHAR(300)     DEFAULT NULL,

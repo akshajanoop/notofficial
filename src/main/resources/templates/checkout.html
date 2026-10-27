@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Checkout & Payment')}"></head>
-<body class="bg-light">
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
 <main class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h3 class="fw-bold mb-4"><i class="bi bi-cart-check"></i> Order Checkout</h3>
+        <div class="col-lg-8" data-reveal>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="fw-bold mb-0 text-white font-heading">
+                    <i class="bi bi-cart-check text-accent me-2"></i>Order Checkout
+                </h3>
+                <span class="badge bg-accent-dim text-accent border border-accent">Step 2 of 2</span>
+            </div>
 
             <!-- Show Details Summary -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="card glass-card border-0 shadow rounded-4 p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <div>
-                        <h5 class="fw-bold mb-1 text-dark" th:text="${show.movieTitle}">Movie Title</h5>
-                        <div class="text-muted small">
-                            <i class="bi bi-building"></i> <span th:text="${show.theatreName}">Theatre</span> &nbsp;|&nbsp;
-                            <i class="bi bi-calendar"></i> <span th:text="${#temporals.format(show.showTime, 'EEE, dd MMM yyyy, hh:mm a')}">Date</span>
+                        <span class="badge bg-accent mb-2">Show Details</span>
+                        <h5 class="fw-bold mb-1 text-white font-heading" th:text="${show.movieTitle}">Movie Title</h5>
+                        <div class="text-secondary small d-flex flex-wrap align-items-center gap-2">
+                            <span><i class="bi bi-building text-accent me-1"></i> <span th:text="${show.theatreName}">Theatre</span></span>
+                            <span class="text-muted">•</span>
+                            <span><i class="bi bi-calendar-event text-accent me-1"></i> <span th:text="${#temporals.format(show.showTime, 'EEE, dd MMM yyyy, hh:mm a')}">Date</span></span>
                         </div>
                     </div>
-                    <span class="badge bg-success p-2">Seats Temporarily Locked</span>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2">
+                        <i class="bi bi-shield-lock-fill me-1"></i> Seats Locked
+                    </span>
                 </div>
             </div>
 
             <!-- Seat Breakdown Table -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
-                <h6 class="fw-bold mb-3 border-bottom pb-2">Selected Tickets</h6>
+            <div class="card glass-card border-0 shadow rounded-4 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                    <h6 class="fw-bold mb-0 text-white font-heading">
+                        <i class="bi bi-ticket-perforated text-accent me-2"></i>Selected Tickets
+                    </h6>
+                    <span class="badge bg-secondary" th:text="${#lists.size(seats)} + ' Ticket(s)'">2 Tickets</span>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-borderless align-middle mb-0">
-                        <thead class="table-light small">
+                        <thead class="small text-secondary border-bottom border-secondary border-opacity-25">
                             <tr>
                                 <th>Seat No</th>
                                 <th>Category</th>
@@ -38,11 +52,13 @@
                         </thead>
                         <tbody>
                             <tr th:each="seat : ${seats}">
-                                <td class="fw-bold" th:text="${seat.seatNumber}">A1</td>
+                                <td class="fw-bold text-white">
+                                    <span class="px-2 py-1 rounded bg-dark border border-secondary border-opacity-25" th:text="${seat.seatNumber}">A1</span>
+                                </td>
                                 <td>
                                     <span class="badge" th:classappend="'bg-' + (${seat.seatType.name() == 'STANDARD' ? 'primary' : (seat.seatType.name() == 'PREMIUM' ? 'warning text-dark' : 'purple text-white')})" th:text="${seat.seatType}">STANDARD</span>
                                 </td>
-                                <td class="text-end fw-semibold">₹<span th:text="${#numbers.formatDecimal(seat.price, 1, 2)}">200.00</span></td>
+                                <td class="text-end fw-semibold text-white">₹<span th:text="${#numbers.formatDecimal(seat.price, 1, 2)}">200.00</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -50,48 +66,53 @@
             </div>
 
             <!-- Loyalty Credits Redemption Card -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
+            <div class="card glass-card border-0 shadow rounded-4 p-4 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-coin text-warning"></i> Redeem Loyalty Credits</h6>
-                    <span class="badge bg-warning text-dark">Available Balance: <strong th:text="${creditBalance}">50</strong> pts (₹<span th:text="${creditBalance}">50</span>)</span>
+                    <h6 class="fw-bold mb-0 text-white font-heading">
+                        <i class="bi bi-coin text-accent me-1"></i> Redeem Loyalty Credits
+                    </h6>
+                    <span class="badge bg-accent-dim text-accent border border-accent fw-bold">
+                        Available Balance: <strong th:text="${creditBalance}">50</strong> pts (₹<span th:text="${creditBalance}">50</span>)
+                    </span>
                 </div>
 
-                <div th:if="${creditBalance > 0}" class="row align-items-center">
+                <div th:if="${creditBalance > 0}" class="row align-items-center g-3">
                     <div class="col-md-7">
-                        <p class="text-muted small mb-0">Use your loyalty points to get an instant discount on your order (1 point = ₹1.00).</p>
+                        <p class="text-secondary small mb-0">Use your loyalty reward credits for instant discount on this booking (1 pt = ₹1.00).</p>
                     </div>
                     <div class="col-md-5">
                         <div class="input-group">
-                            <span class="input-group-text bg-light small">Pts</span>
-                            <input type="number" id="redeem-input" class="form-control text-end" min="0" th:max="${creditBalance}" value="0" oninput="calculateFinalTotal()">
-                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="applyMaxCredits()">Max</button>
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-accent small fw-bold">Pts</span>
+                            <input type="number" id="redeem-input" class="form-control text-end bg-dark border-secondary border-opacity-25 text-white" min="0" th:max="${creditBalance}" value="0" oninput="calculateFinalTotal()">
+                            <button class="btn btn-outline-accent btn-sm px-3 fw-bold" type="button" onclick="applyMaxCredits()">Max</button>
                         </div>
                     </div>
                 </div>
-                <div th:if="${creditBalance == 0}" class="text-muted small">
-                    You have 0 loyalty points. You will earn 10% cashback points on this booking!
+                <div th:if="${creditBalance == 0}" class="text-secondary small d-flex align-items-center gap-2">
+                    <i class="bi bi-info-circle text-accent"></i>
+                    <span>You have 0 loyalty points. You will earn 10% cashback credits upon completing this booking!</span>
                 </div>
             </div>
 
             <!-- Final Order Total & Confirmation Form -->
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Tickets Subtotal</span>
-                    <span class="fw-semibold">₹<span id="subtotal-val" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
+            <div class="card glass-card border-0 shadow rounded-4 p-4">
+                <div class="d-flex justify-content-between mb-2 text-secondary">
+                    <span>Tickets Subtotal</span>
+                    <span class="fw-semibold text-white">₹<span id="subtotal-val" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
                 </div>
                 <div class="d-flex justify-content-between mb-3 text-success">
                     <span>Loyalty Credit Discount</span>
-                    <span>- ₹<span id="discount-val">0.00</span></span>
+                    <span class="fw-semibold">- ₹<span id="discount-val">0.00</span></span>
                 </div>
-                <div class="d-flex justify-content-between border-top pt-3 mb-4">
-                    <span class="fs-5 fw-bold">Total Amount Payable</span>
-                    <span class="fs-4 fw-bold text-danger">₹<span id="final-payable" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
+                <div class="d-flex justify-content-between border-top border-secondary border-opacity-25 pt-3 mb-4 align-items-center">
+                    <span class="fs-5 fw-bold text-white">Total Amount Payable</span>
+                    <span class="fs-4 fw-bold text-accent">₹<span id="final-payable" th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">400.00</span></span>
                 </div>
 
                 <form th:action="@{/checkout/confirm}" method="post">
                     <input type="hidden" name="creditsToRedeem" id="hidden-credits" value="0">
-                    <button type="submit" class="btn btn-danger btn-lg w-100 py-3 fw-bold">
-                        <i class="bi bi-credit-card"></i> Pay & Confirm Reservation
+                    <button type="submit" class="btn btn-accent btn-lg w-100 py-3 fw-bold rounded-pill shadow">
+                        <i class="bi bi-credit-card me-2"></i> Pay &amp; Confirm Reservation
                     </button>
                 </form>
             </div>

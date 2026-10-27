@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Sign In')}"></head>
-<body class="bg-light">
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
 <main class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body p-4">
+        <div class="col-md-5 col-lg-4" data-reveal>
+            <div class="card glass-card shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-4">
-                        <i class="bi bi-film text-danger display-4"></i>
-                        <h4 class="fw-bold mt-2">Welcome Back</h4>
-                        <p class="text-muted small">Sign in to book tickets & place live bids</p>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle p-3 mb-2" style="width: 72px; height: 72px; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border);">
+                            <i class="bi bi-film fs-1"></i>
+                        </div>
+                        <h3 class="fw-bold text-white mt-2 font-heading">Welcome Back</h3>
+                        <p class="text-secondary small">Sign in to book tickets, unlock loyalty credits &amp; join live seat auctions</p>
                     </div>
 
                     <div th:if="${successMsg}" class="alert alert-success py-2 small" th:text="${successMsg}"></div>
@@ -21,27 +23,29 @@
 
                     <form th:action="@{/login}" method="post">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Email Address</label>
-                            <input type="email" name="email" class="form-control" placeholder="name@example.com" value="alice@example.com" required>
+                            <label class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control" placeholder="name@example.com" value="alice@example.com" required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" value="password123" required>
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" name="password" class="form-control" placeholder="••••••••" value="password123" required>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold">Sign In</button>
+                        <button type="submit" class="btn btn-accent w-100 py-2 fw-bold rounded-pill">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </button>
                     </form>
 
-                    <div class="text-center mt-3 pt-3 border-top">
-                        <span class="small text-muted">Don't have an account? </span>
-                        <a th:href="@{/register}" class="small text-danger fw-semibold text-decoration-none">Create Account</a>
+                    <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
+                        <span class="small text-secondary">New to CineReserve? </span>
+                        <a th:href="@{/register}" class="small text-accent fw-bold text-decoration-none">Create an Account</a>
                     </div>
                 </div>
-            </div>
-            
-            <div class="card bg-white mt-3 border-0 shadow-sm p-3 small text-muted">
-                <strong>Demo Accounts:</strong><br>
-                • <strong>Customer:</strong> <code>alice@example.com</code> / <code>password123</code><br>
-                • <strong>Admin:</strong> <code>admin@cinereserve.com</code> / <code>admin123</code>
             </div>
         </div>
     </div>

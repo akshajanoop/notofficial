@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head('Showtimes - ' + ${movie.title})}"></head>
-<body class="bg-light">
+<body class="bg-dark text-light">
 
 <nav th:replace="~{layout :: navbar}"></nav>
 
 <main class="container py-4">
+
     <!-- Movie Overview Header Card -->
-    <div class="card shadow-sm border-0 mb-4 p-4 rounded-3 bg-white">
+    <div class="card glass-card shadow-lg mb-4 p-4 rounded-4" data-reveal>
         <div class="row align-items-center">
             <div class="col-md-3 col-lg-2 text-center mb-3 mb-md-0">
-                <div style="height: 180px; border-radius: 8px; overflow: hidden; position: relative;" class="shadow-sm">
+                <div style="height: 200px; border-radius: 12px; overflow: hidden; position: relative;" class="shadow-sm">
                     <img th:if="${movie.posterUrl != null and movie.posterUrl.startsWith('http')}" 
                          th:src="${movie.posterUrl}" 
                          class="w-100 h-100 object-fit-cover" 
@@ -22,26 +23,28 @@
             </div>
             <div class="col-md-9 col-lg-10">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <h2 class="fw-bold mb-0 text-dark" th:text="${movie.title}">Movie Title</h2>
-                    <span class="badge bg-danger" th:text="${movie.genre}">Action</span>
-                    <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> <span th:text="${movie.rating}">8.5</span>/10</span>
-                    <span class="badge bg-secondary"><i class="bi bi-clock"></i> <span th:text="${movie.durationMinutes}">145</span> mins</span>
+                    <h2 class="fw-bold mb-0 text-white font-heading" th:text="${movie.title}">Movie Title</h2>
+                    <span class="badge bg-accent" th:text="${movie.genre}">Action</span>
+                    <span class="badge bg-warning text-dark fw-bold">
+                        <i class="bi bi-star-fill me-1"></i><span th:text="${movie.rating}">8.5</span>/10
+                    </span>
+                    <span class="badge bg-secondary"><i class="bi bi-clock me-1"></i><span th:text="${movie.durationMinutes}">145</span> mins</span>
                 </div>
-                <p class="text-muted mb-3" th:text="${movie.description}">Plot summary and details about the film.</p>
+                <p class="text-secondary mb-3" th:text="${movie.description}">Plot summary and details about the film.</p>
 
                 <!-- Cast & Crew Info Section -->
-                <div class="row g-2 pt-2 border-top small">
+                <div class="row g-2 pt-2 border-top border-secondary border-opacity-25 small">
                     <div class="col-md-12 mb-1" th:if="${movie.director != null and !movie.director.isEmpty()}">
-                        <strong class="text-dark"><i class="bi bi-camera-reels-fill text-danger me-1"></i> Director:</strong> 
-                        <span class="text-muted" th:text="${movie.director}">Director Name</span>
+                        <strong class="text-light"><i class="bi bi-camera-reels-fill text-accent me-1"></i> Director:</strong> 
+                        <span class="text-secondary" th:text="${movie.director}">Director Name</span>
                     </div>
                     <div class="col-md-12 mb-1" th:if="${movie.castMembers != null and !movie.castMembers.isEmpty()}">
-                        <strong class="text-dark"><i class="bi bi-people-fill text-primary me-1"></i> Cast:</strong> 
-                        <span class="text-muted" th:text="${movie.castMembers}">Cast Members</span>
+                        <strong class="text-light"><i class="bi bi-people-fill text-info me-1"></i> Cast:</strong> 
+                        <span class="text-secondary" th:text="${movie.castMembers}">Cast Members</span>
                     </div>
                     <div class="col-md-12" th:if="${movie.crewMembers != null and !movie.crewMembers.isEmpty()}">
-                        <strong class="text-dark"><i class="bi bi-gear-wide-connected text-secondary me-1"></i> Crew & Music:</strong> 
-                        <span class="text-muted" th:text="${movie.crewMembers}">Crew Members</span>
+                        <strong class="text-light"><i class="bi bi-gear-wide-connected text-secondary me-1"></i> Crew &amp; Music:</strong> 
+                        <span class="text-secondary" th:text="${movie.crewMembers}">Crew Members</span>
                     </div>
                 </div>
             </div>
@@ -49,43 +52,61 @@
     </div>
 
     <!-- Shows Grouped by Theatre -->
-    <h4 class="fw-bold mb-3"><i class="bi bi-geo-alt"></i> Available Cinemas & Timings</h4>
+    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+        <h4 class="fw-bold mb-0 text-white font-heading">
+            <i class="bi bi-geo-alt-fill text-accent me-2"></i>Available Cinemas &amp; Timings
+        </h4>
+        <span class="text-secondary small">Direct digital projection &amp; Dolby Atmos certified</span>
+    </div>
 
     <div th:if="${showsByTheatre.isEmpty()}" class="alert alert-info">
-        No shows currently scheduled for this movie. Please check back later!
+        <i class="bi bi-info-circle me-1"></i> No shows currently scheduled for this movie. Please check back later!
     </div>
 
     <div class="row g-4" th:unless="${showsByTheatre.isEmpty()}">
-        <div class="col-12" th:each="entry : ${showsByTheatre}">
-            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
-                    <div>
-                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-building"></i> <span th:text="${entry.key}">Theatre Name</span></h5>
-                        <small class="text-muted">Direct digital projection & Dolby Atmos sound</small>
+        <div class="col-12" th:each="entry : ${showsByTheatre}" data-reveal>
+            <div class="card glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-3 mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border);">
+                            <i class="bi bi-building fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-white" th:text="${entry.key}">Theatre Name</h5>
+                            <small class="text-secondary">Dolby Atmos • 4K Laser Projection</small>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Showtimes Grid -->
                 <div class="d-flex flex-wrap gap-3">
-                    <div th:each="show : ${entry.value}" class="p-3 border rounded-3 text-center bg-light" style="min-width: 170px;">
-                        <div class="fw-bold text-dark fs-5 mb-1" th:text="${#temporals.format(show.showTime, 'hh:mm a')}">06:00 PM</div>
-                        <div class="small text-muted mb-2" th:text="${#temporals.format(show.showDate, 'EEE, dd MMM')}">Sat, 13 Sep</div>
+                    <div th:each="show : ${entry.value}" class="p-3 rounded-3 text-center hover-lift" style="min-width: 175px; background: var(--bg-input); border: 1px solid var(--border);">
+                        <div class="fw-bold text-white fs-5 mb-1" th:text="${#temporals.format(show.showTime, 'hh:mm a')}">06:00 PM</div>
+                        <div class="small text-secondary mb-2" th:text="${#temporals.format(show.showDate, 'EEE, dd MMM')}">Sat, 13 Sep</div>
                         
                         <div class="mb-3">
                             <span class="badge bg-success" th:if="${show.availableSeatCount > 10}">
-                                <span th:text="${show.availableSeatCount}">25</span> Seats Free
+                                <i class="bi bi-check-circle me-1"></i><span th:text="${show.availableSeatCount}">25</span> Seats Free
                             </span>
                             <span class="badge bg-warning text-dark" th:if="${show.availableSeatCount <= 10 and show.availableSeatCount > 0}">
-                                Filling Fast (<span th:text="${show.availableSeatCount}">4</span> Left)
+                                <i class="bi bi-fire me-1"></i>Filling Fast (<span th:text="${show.availableSeatCount}">4</span> Left)
                             </span>
-                            <span class="badge bg-danger" th:if="${show.availableSeatCount == 0}">
+                            <span class="badge bg-accent" th:if="${show.availableSeatCount == 0}">
                                 Sold Out
                             </span>
                         </div>
 
-                        <a th:href="@{/shows/{id}/seats(id=${show.showId})}" 
-                           class="btn btn-sm w-100 fw-semibold"
-                           th:classappend="${show.availableSeatCount > 0} ? 'btn-danger' : 'btn-secondary disabled'">
+                        <!-- Action Button: Admin Mode vs Customer Mode -->
+                        <a th:if="${session.isAdmin}" 
+                           th:href="@{/admin}" 
+                           class="btn btn-sm w-100 fw-semibold rounded-pill btn-outline-accent" 
+                           title="Admins manage shows and bookings in Admin Portal">
+                            <i class="bi bi-shield-lock me-1"></i> Admin View
+                        </a>
+                        <a th:unless="${session.isAdmin}" 
+                           th:href="@{/shows/{id}/seats(id=${show.showId})}" 
+                           class="btn btn-sm w-100 fw-semibold rounded-pill"
+                           th:classappend="${show.availableSeatCount > 0} ? 'btn-accent' : 'btn-secondary disabled'">
                             Select Seats
                         </a>
                     </div>

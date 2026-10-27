@@ -1,189 +1,734 @@
-/* Custom Styling for Movie Ticket Booking System */
+/* ============================================================
+   CINERESERVE — Modern Dark + Orange Accent Design System
+   One accent color: #ff6a00. Everything else neutral.
+   ============================================================ */
 
+/* ---- 1. Custom Properties ---- */
 :root {
-    --primary-color: #e50914;
-    --dark-bg: #141414;
-    --card-bg: #1f1f1f;
+    /* Backgrounds */
+    --bg-main:          #0b0b0c;
+    --bg-surface:       #161618;
+    --bg-surface-hover: #1f1f22;
+    --bg-elevated:      #242428;
+    --bg-input:         #131315;
+    --bg-nav:           rgba(11, 11, 12, 0.82);
+
+    /* Accent */
+    --accent:           #ff6a00;
+    --accent-hover:     #ff8533;
+    --accent-dim:       rgba(255, 106, 0, 0.12);
+    --accent-glow:      rgba(255, 106, 0, 0.25);
+    --accent-border:    rgba(255, 106, 0, 0.35);
+
+    /* Semantic */
+    --success:    #22c55e;
+    --success-bg: rgba(34, 197, 94, 0.10);
+    --warning:    #eab308;
+    --warning-bg: rgba(234, 179, 8, 0.10);
+    --danger:     #ef4444;
+    --danger-bg:  rgba(239, 68, 68, 0.10);
+    --info:       #3b82f6;
+    --info-bg:    rgba(59, 130, 246, 0.10);
+
+    /* Text */
+    --text-primary:   #f2f2f3;
+    --text-secondary: #9a9aa0;
+    --text-muted:     #6b6b73;
+    --text-accent:    #ff6a00;
+
+    /* Borders */
+    --border:       #2a2a2e;
+    --border-hover: #3a3a3f;
+
+    /* Typography */
+    --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono:    ui-monospace, "Cascadia Code", "Fira Code", Menlo, monospace;
+    --leading:      1.6;
+    --leading-tight:1.25;
+
+    /* Radii */
+    --radius-xs:   6px;
+    --radius-sm:   8px;
+    --radius-md:   12px;
+    --radius-lg:   16px;
+    --radius-pill: 9999px;
+
+    /* Shadows */
+    --shadow-sm:   0 1px 3px rgba(0,0,0,0.35);
+    --shadow-md:   0 4px 14px rgba(0,0,0,0.45);
+    --shadow-lg:   0 10px 35px rgba(0,0,0,0.55);
+    --shadow-glow: 0 0 24px var(--accent-glow);
+
+    /* Transitions */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --t-fast:   150ms;
+    --t-base:   250ms;
+    --t-slow:   400ms;
 }
 
+/* ---- 2. Reset & Base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
-    background-color: #f8f9fa;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-body);
+    line-height: var(--leading);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-main {
-    flex: 1;
-}
+main { flex: 1; }
 
-/* Navbar */
-.navbar-brand {
+a { color: var(--accent); text-decoration: none; transition: color var(--t-fast) ease; }
+a:hover { color: var(--accent-hover); }
+
+::selection { background: var(--accent); color: #fff; }
+
+img { max-width: 100%; height: auto; }
+
+/* ---- 3. Typography ---- */
+h1, h2, h3, h4, h5, h6,
+.font-heading, .navbar-brand {
+    font-family: var(--font-body);
     font-weight: 700;
-    letter-spacing: 0.5px;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); }
+h3 { font-size: clamp(1.3rem, 3vw, 1.8rem); }
+
+/* ---- 4. Scrollbar ---- */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { background: #2e2e32; border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ============================================================
+   5. NAVIGATION  (sticky, translucent, backdrop-blur)
+   ============================================================ */
+.navbar, .glass-navbar {
+    background: var(--bg-nav) !important;
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border-bottom: 1px solid var(--border) !important;
+    transition: background var(--t-base) ease;
+    z-index: 100;
 }
 
-/* Cinema Hall Screen and Layout */
-.screen-wrapper {
-    perspective: 500px;
-    margin-bottom: 30px;
+.navbar-brand {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent) !important;
+    -webkit-text-fill-color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.navbar-brand i { color: var(--accent) !important; -webkit-text-fill-color: var(--accent); }
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    padding: 7px 14px !important;
+    transition: all var(--t-fast) ease;
+}
+.nav-link:hover, .nav-link:focus-visible {
+    color: var(--text-primary) !important;
+    background: rgba(255,255,255,0.05);
+}
+.nav-link.active-nav {
+    color: var(--accent) !important;
 }
 
+/* Override all .text-warning accent links in nav to orange */
+.navbar .text-warning,
+.nav-link.text-warning {
+    color: var(--accent) !important;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 6px;
+}
+.dropdown-menu-dark { background: var(--bg-surface) !important; }
+.dropdown-item {
+    color: var(--text-secondary) !important;
+    border-radius: var(--radius-xs);
+    padding: 8px 14px;
+    font-size: 0.88rem;
+    transition: background var(--t-fast) ease;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+    background: var(--accent-dim) !important;
+    color: var(--text-primary) !important;
+}
+.dropdown-item.text-danger { color: var(--danger) !important; }
+.dropdown-item.text-danger:hover { background: var(--danger-bg) !important; }
+.dropdown-divider { border-color: var(--border) !important; }
+
+/* Mobile toggler */
+.navbar-toggler {
+    border: 1px solid var(--border) !important;
+    padding: 4px 10px;
+}
+.navbar-toggler-icon {
+    filter: invert(0.7);
+}
+
+/* ============================================================
+   6. CARDS
+   ============================================================ */
+.card, .glass-card {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--t-base) var(--ease-out),
+                box-shadow var(--t-base) ease,
+                border-color var(--t-base) ease;
+    backdrop-filter: none;
+}
+.card:hover, .glass-card:hover {
+    border-color: var(--border-hover) !important;
+}
+
+.card-header {
+    background: rgba(255,255,255,0.02) !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+    font-weight: 700;
+}
+.card-footer {
+    background: rgba(255,255,255,0.02) !important;
+    border-top: 1px solid var(--border) !important;
+}
+
+/* Movie card hover */
+.movie-card {
+    overflow: hidden;
+    position: relative;
+}
+.movie-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md), 0 0 20px var(--accent-glow) !important;
+    border-color: var(--accent-border) !important;
+}
+.movie-card img { transition: transform var(--t-slow) var(--ease-out); }
+.movie-card:hover img { transform: scale(1.04); }
+
+.movie-poster-placeholder {
+    height: 240px;
+    background: linear-gradient(145deg, var(--bg-surface), var(--bg-main));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 2.5rem;
+}
+
+/* Hover lift utility */
+.hover-lift {
+    transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) ease;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================================
+   7. BUTTONS
+   ============================================================ */
+
+/* Primary accent button (replaces btn-danger) */
+.btn-danger, .btn-accent {
+    background: var(--accent) !important;
+    border: none !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: 9px 20px;
+    box-shadow: 0 2px 10px var(--accent-glow);
+    transition: all var(--t-base) var(--ease-out);
+    position: relative;
+}
+.btn-danger:hover, .btn-accent:hover {
+    background: var(--accent-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-glow), var(--shadow-glow);
+}
+.btn-danger:active, .btn-accent:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 6px var(--accent-glow);
+}
+.btn-danger:focus-visible, .btn-accent:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Outline accent (replaces btn-outline-danger) */
+.btn-outline-danger, .btn-outline-accent {
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+    background: transparent !important;
+    border-radius: var(--radius-sm);
+    transition: all var(--t-base) ease;
+}
+.btn-outline-danger:hover, .btn-outline-accent:hover {
+    background: var(--accent-dim) !important;
+    border-color: var(--accent) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 4px 14px var(--accent-glow);
+}
+.btn-outline-danger:focus-visible, .btn-outline-accent:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Secondary / light outline */
+.btn-outline-secondary, .btn-outline-light {
+    border-color: var(--border) !important;
+    color: var(--text-secondary) !important;
+    border-radius: var(--radius-sm);
+    transition: all var(--t-fast) ease;
+}
+.btn-outline-secondary:hover, .btn-outline-light:hover {
+    background: rgba(255,255,255,0.06) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-hover) !important;
+}
+.btn-outline-secondary:focus-visible, .btn-outline-light:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Warning button → orange-toned */
+.btn-warning {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #fff !important;
+}
+.btn-warning:hover { background: var(--accent-hover) !important; }
+
+.btn-outline-warning {
+    color: var(--accent) !important;
+    border-color: var(--accent-border) !important;
+}
+.btn-outline-warning:hover {
+    background: var(--accent-dim) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Generic btn focus */
+.btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: none !important;
+}
+
+/* ============================================================
+   8. FORMS
+   ============================================================ */
+.form-control, .form-select {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+    font-size: 0.92rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow) !important;
+    background-color: var(--bg-surface) !important;
+}
+.form-control::placeholder { color: var(--text-muted) !important; }
+
+.form-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.input-group-text {
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.88rem;
+}
+
+/* ============================================================
+   9. BADGES
+   ============================================================ */
+.badge {
+    padding: 5px 11px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+}
+.badge.bg-danger, .badge.bg-accent {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+.badge.bg-warning {
+    background: var(--warning) !important;
+    color: #000 !important;
+}
+.badge.bg-success {
+    background: var(--success) !important;
+    color: #fff !important;
+}
+.badge.bg-info {
+    background: var(--info) !important;
+    color: #fff !important;
+}
+.badge.bg-purple, .bg-purple {
+    background: #7c3aed !important;
+    color: #fff !important;
+}
+.badge.bg-secondary {
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid var(--border);
+    color: var(--text-secondary) !important;
+}
+.badge.bg-dark {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border);
+    color: var(--text-secondary) !important;
+}
+
+/* ============================================================
+   10. TABLES
+   ============================================================ */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-primary);
+    color: var(--text-primary) !important;
+}
+.table > :not(caption) > * > * {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: inherit;
+    padding: 12px 16px;
+}
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(255,255,255,0.02) !important;
+}
+
+/* ============================================================
+   11. MODALS
+   ============================================================ */
+.modal-content {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-lg);
+    color: var(--text-primary);
+}
+.modal-header { border-bottom: 1px solid var(--border) !important; }
+.modal-footer { border-top: 1px solid var(--border) !important; }
+.modal-backdrop.show { opacity: 0.7; }
+.btn-close-white { filter: invert(0.8); }
+
+/* ============================================================
+   12. NAV PILLS / TABS
+   ============================================================ */
+.nav-pills .nav-link {
+    color: var(--text-secondary) !important;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 8px 18px !important;
+    transition: all var(--t-fast) ease;
+}
+.nav-pills .nav-link:hover {
+    color: var(--text-primary) !important;
+    background: rgba(255,255,255,0.05);
+}
+.nav-pills .nav-link.active {
+    background: var(--accent) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+/* ============================================================
+   13. ALERTS
+   ============================================================ */
+.alert {
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+}
+.alert-success {
+    background: var(--success-bg) !important;
+    border-color: rgba(34,197,94,0.25) !important;
+    color: #86efac !important;
+}
+.alert-danger {
+    background: var(--danger-bg) !important;
+    border-color: rgba(239,68,68,0.25) !important;
+    color: #fca5a5 !important;
+}
+.alert-warning {
+    background: var(--warning-bg) !important;
+    border-color: rgba(234,179,8,0.25) !important;
+    color: #fde68a !important;
+}
+.alert-info, .alert-dark {
+    background: rgba(255,255,255,0.03) !important;
+    border-color: var(--border) !important;
+    color: var(--text-secondary) !important;
+}
+.btn-close {
+    filter: invert(0.7);
+}
+
+/* ============================================================
+   14. ACCENT COLOR OVERRIDES (text-danger → orange everywhere)
+   ============================================================ */
+.text-danger { color: var(--accent) !important; }
+.text-accent { color: var(--accent) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-success { color: var(--success) !important; }
+.text-info    { color: var(--info) !important; }
+.text-white   { color: var(--text-primary) !important; }
+.text-light   { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+
+.bg-danger, .bg-accent { background-color: var(--accent) !important; }
+.bg-dark { background-color: var(--bg-main) !important; }
+.bg-black { background-color: var(--bg-main) !important; }
+
+.bg-danger.bg-opacity-25, .bg-accent.bg-opacity-25, .bg-accent-dim { background-color: var(--accent-dim) !important; }
+.bg-opacity-25.bg-danger, .bg-opacity-25.bg-accent { background-color: var(--accent-dim) !important; }
+
+.border-danger, .border-accent { border-color: var(--accent-border) !important; }
+.border-secondary { border-color: var(--border) !important; }
+.border-warning { border-color: rgba(234,179,8,0.3) !important; }
+
+.bg-opacity-50 { opacity: 1; }
+
+/* ============================================================
+   15. CINEMA SEAT GRID
+   ============================================================ */
+.screen-wrapper { perspective: 600px; margin-bottom: 32px; text-align: center; }
 .screen-indicator {
     height: 16px;
-    background: linear-gradient(to bottom, #ced4da, #adb5bd);
+    background: linear-gradient(to bottom, #ddd, #888);
     border-radius: 50% 50% 0 0;
-    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.25), 0 3px 6px rgba(0,0,0,0.2);
-    transform: rotateX(-15deg);
+    box-shadow: 0 8px 25px var(--accent-glow), 0 0 35px rgba(255,255,255,0.15);
+    transform: rotateX(-20deg);
     margin: 0 auto 10px;
-    max-width: 90%;
+    max-width: 85%;
 }
-
 .screen-glow {
-    height: 12px;
-    background: radial-gradient(ellipse at center, rgba(13, 110, 253, 0.2) 0%, rgba(255,255,255,0) 75%);
+    height: 18px;
+    background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
     margin-bottom: 20px;
 }
 
-/* Realistic, Spacious Cinema Seat Sizing */
-.cinema-hall-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    width: 100%;
-}
-
-.seat-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.row-label {
-    width: 32px;
-    font-weight: 700;
-    color: #6c757d;
-    font-size: 0.95rem;
-    text-align: right;
-    margin-right: 8px;
-}
+.cinema-hall-grid { display: flex; flex-direction: column; gap: 14px; align-items: center; width: 100%; }
+.seat-row { display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%; }
+.row-label { width: 30px; font-weight: 800; color: var(--text-muted); font-size: 0.9rem; text-align: right; margin-right: 6px; }
 
 .seat-btn {
-    width: 58px;
-    height: 52px;
+    width: 54px; height: 48px;
     border-radius: 10px 10px 14px 14px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    font-size: 0.88rem; font-weight: 700;
+    display: inline-flex; flex-direction: column;
+    align-items: center; justify-content: center;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border: 2px solid transparent;
+    transition: all var(--t-fast) var(--ease-out);
+    border: 1px solid rgba(255,255,255,0.1);
     user-select: none;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-    position: relative;
+    box-shadow: var(--shadow-sm);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
 }
-
 .seat-btn:hover:not(.seat-reserved):not(.seat-locked) {
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255,255,255,0.25);
 }
-
-/* Standard Seat: Front Section */
-.seat-available.seat-standard {
-    background: linear-gradient(145deg, #2b7de9, #0d6efd);
-    color: white;
-}
-
-/* Premium Seat: Center Sweet Spot (Larger & Golden Glow) */
-.seat-available.seat-premium {
-    background: linear-gradient(145deg, #ffd043, #ffc107);
-    color: #212529;
-}
-
-/* Recliner Seat: Back VIP Rows (Extra Wide & Luxurious) */
+.seat-available.seat-standard { background: #1d4ed8; color: #fff; border-color: #3b82f6; }
+.seat-available.seat-premium  { background: #d97706; color: #000; border-color: #f59e0b; font-weight: 800; }
 .seat-available.seat-recliner {
-    width: 72px;
-    height: 58px;
-    background: linear-gradient(145deg, #8553e6, #6f42c1);
-    color: white;
+    width: 68px; height: 54px;
+    background: #7c3aed; color: #fff;
     border-radius: 12px 12px 16px 16px;
-    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.25);
+    border-color: #a78bfa;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.3);
 }
 
-/* Best Viewing Sweet Spot Highlight Badge */
-.sweet-spot-seat {
-    position: relative;
-}
-
+.sweet-spot-seat { position: relative; }
 .sweet-spot-seat::before {
-    content: 'BEST VIEW';
-    position: absolute;
-    top: -9px;
-    background: #dc3545;
-    color: white;
-    font-size: 8px;
-    font-weight: 800;
-    padding: 1px 4px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    content: 'BEST VIEW'; position: absolute; top: -9px;
+    background: var(--accent); color: #fff;
+    font-size: 7px; font-weight: 800;
+    padding: 1px 5px; border-radius: 3px;
+    letter-spacing: 0.4px; white-space: nowrap;
+    box-shadow: 0 2px 6px var(--accent-glow);
 }
 
 .seat-selected {
-    background: linear-gradient(145deg, #20c997, #198754) !important;
-    color: white !important;
-    border-color: #0f5132 !important;
-    transform: translateY(-6px) scale(1.15) !important;
-    box-shadow: 0 8px 18px rgba(25, 135, 84, 0.45) !important;
+    background: linear-gradient(145deg, #059669, #10b981) !important;
+    color: #fff !important; border-color: #34d399 !important;
+    transform: translateY(-5px) scale(1.12) !important;
+    box-shadow: 0 8px 20px rgba(16,185,129,0.45) !important;
+    animation: seatPulse 2s infinite ease-in-out;
+}
+@keyframes seatPulse {
+    0%, 100% { box-shadow: 0 8px 20px rgba(16,185,129,0.45); }
+    50%      { box-shadow: 0 10px 28px rgba(16,185,129,0.75); }
 }
 
-.seat-reserved {
-    background-color: #6c757d;
-    color: #dee2e6;
-    cursor: not-allowed;
-    opacity: 0.45;
-    box-shadow: none;
+.seat-reserved { background: var(--bg-elevated) !important; color: var(--text-muted) !important; cursor: not-allowed; opacity: 0.4; box-shadow: none !important; border-color: transparent !important; }
+.seat-locked   { background: #92400e !important; color: #fef3c7 !important; cursor: not-allowed; opacity: 0.65; border-color: #d97706 !important; }
+.aisle-gap { margin-right: 28px; }
+
+/* ============================================================
+   16. AUCTION TIMER
+   ============================================================ */
+.auction-timer {
+    font-family: var(--font-mono);
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent-glow);
+    letter-spacing: 2px;
 }
 
-.seat-locked {
-    background-color: #fd7e14;
-    color: white;
-    cursor: not-allowed;
-    opacity: 0.7;
+/* ============================================================
+   17. HERO SECTION (home page)
+   ============================================================ */
+.hero-section {
+    background: radial-gradient(circle at 50% 20%, rgba(255,106,0,0.12) 0%, var(--bg-main) 70%);
+    min-height: 400px;
 }
 
-/* Center Aisle Spacer */
-.aisle-gap {
-    margin-right: 28px;
+/* ============================================================
+   18. SCROLL-REVEAL ANIMATION
+   ============================================================ */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity var(--t-slow) var(--ease-out), transform var(--t-slow) var(--ease-out);
+}
+[data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Movie Cards */
-.movie-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-radius: 12px;
-    overflow: hidden;
+@media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    .movie-card:hover { transform: none; }
+    .seat-selected { animation: none; }
+    .hover-lift:hover { transform: none; }
+    .btn-danger:hover, .btn-accent:hover { transform: none; }
+    .seat-btn:hover:not(.seat-reserved):not(.seat-locked) { transform: none; }
 }
 
-.movie-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+/* ============================================================
+   19. UTILITY TEXT HELPERS
+   ============================================================ */
+.text-gradient {
+    background: linear-gradient(135deg, #fff, var(--text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-gradient-accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.movie-poster-placeholder {
-    height: 220px;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2.5rem;
+/* Card header overrides for admin panel */
+.card-header.bg-danger,
+.card-header.bg-warning {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-bottom: 1px solid var(--accent-border) !important;
+}
+
+/* ============================================================
+   20. FOOTER
+   ============================================================ */
+footer {
+    border-top: 1px solid var(--border) !important;
+    background: var(--bg-main) !important;
+}
+footer .text-danger { color: var(--accent) !important; }
+
+/* ============================================================
+   21. RESPONSIVE ADJUSTMENTS
+   ============================================================ */
+@media (max-width: 768px) {
+    .seat-btn { width: 42px; height: 38px; font-size: 0.72rem; border-radius: 8px 8px 10px 10px; }
+    .seat-available.seat-recliner { width: 52px; height: 42px; }
+    .aisle-gap { margin-right: 16px; }
+    .seat-row { gap: 6px; }
+    .auction-timer { font-size: 2rem; }
+    .hero-section { min-height: 320px; }
+}
+@media (max-width: 576px) {
+    .seat-btn { width: 36px; height: 34px; font-size: 0.65rem; }
+    .seat-available.seat-recliner { width: 44px; height: 36px; }
+    .cinema-hall-grid { gap: 8px; }
+}
+
+/* ============================================================
+   22. MISC COMPONENT OVERRIDES
+   ============================================================ */
+/* Progress bars */
+.progress { background: var(--bg-elevated); border-radius: var(--radius-pill); }
+.progress-bar { background: var(--accent); }
+
+/* Accordion */
+.accordion-button { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border); }
+.accordion-button:not(.collapsed) { background: var(--accent-dim); color: var(--accent); }
+.accordion-body { background: var(--bg-main); color: var(--text-secondary); }
+
+/* Spinner */
+.spinner-border { color: var(--accent); }
+
+/* Link overrides */
+.alert-link { color: var(--accent) !important; font-weight: 700; }
+
+/* object-fit for images */
+.object-fit-cover { object-fit: cover; }
+
+/* Override Bootstrap bg-opacity subtle issues */
+.bg-opacity-25 { --bs-bg-opacity: 0.12; }
+.bg-opacity-50 { --bs-bg-opacity: 0.15; }
+
+/* Border opacity overrides */
+.border-opacity-25 { --bs-border-opacity: 0.15; }
+.border-opacity-50 { --bs-border-opacity: 0.25; }
+
+/* Sticky sidebar in seat selection / admin */
+.sticky-top { z-index: 10; }
+
+/* Toast (for future use) */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1100;
 }
